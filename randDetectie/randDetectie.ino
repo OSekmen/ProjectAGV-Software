@@ -49,22 +49,26 @@ void loop() {
   // put your main code here, to run repeatedly:
   distanceL = sensorL.readRangeSingleMillimeters();
   distanceR = sensorR.readRangeSingleMillimeters();
-  dsitanace = abs(75-distanceL)+abs(75-distanceR)/2
-  if (distanceL > 75) {
+  distance = ((abs(75-distanceL)+abs(75-distanceR))/2);
+  pwm = map(distance,20,75,0,255);
+  if (distanceL < 70 && distanceR > 80) {
+    analogWrite(10, pwm);
     digitalWrite(9, LOW);
-    digitalWrite(10, HIGH);
-  } else if (distanceR > 75) {
-    digitalWrite(9, HIGH);
+  } else if (distanceR < 70 && distanceL > 80) {
+    analogWrite(9, pwm);
     digitalWrite(10, LOW);
-  }else if(distanceL > 70 && distanceR < 80){
-    digitalWrite(9, HIGH);
-    digitalWrite(10, HIGH);
+  }
+  else if (distanceL > 70 && distanceL < 80) {
+    digitalWrite(9, LOW);
+    digitalWrite(10, LOW);
   }
 
     Serial.print("distanceL: ");
     Serial.print(distanceL);
     Serial.print("  distanceR: ");
     Serial.println(distanceR);
+    Serial.print("  distance: ");
+    Serial.println(distance);
     /*
     Serial.print("75 -distance: ");
     Serial.print(75 - distance);
