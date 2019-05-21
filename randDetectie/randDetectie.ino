@@ -12,8 +12,11 @@ int sensorLreset = 8;
 int sensorRreset = 7;
 int pwm;
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> bf3b2e768cfed92d81cd2e55e7f3608ed9c61c36
 void setup() {
   // put your setup code here, to run once:
   
@@ -37,6 +40,8 @@ void setup() {
   sensorL.init();
   sensorL.setAddress(0x30);
   sensorL.setTimeout(500);
+
+  hallo!
 
   //repeat on Right Sensor
   digitalWrite(sensorRreset, HIGH);
