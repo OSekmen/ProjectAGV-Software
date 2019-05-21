@@ -21,5 +21,8 @@
     <ClInclude Include="__vm\.Main.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\ObstakelDetectie\ObstakelDetectie.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
