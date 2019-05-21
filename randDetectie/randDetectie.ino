@@ -12,8 +12,7 @@ int sensorLreset = 8;
 int sensorRreset = 7;
 int pwm;
 
-BAS is dik!!!
-HALLO!!!!!!!!!!!
+
 
 void setup() {
   // put your setup code here, to run once:
