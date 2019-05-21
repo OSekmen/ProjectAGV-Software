@@ -35,6 +35,8 @@ void setup() {
   sensorL.setAddress(0x30);
   sensorL.setTimeout(500);
 
+  hallo!
+
   //repeat on Right Sensor
   digitalWrite(sensorRreset, HIGH);
   sensorR.init();
