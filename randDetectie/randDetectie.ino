@@ -7,7 +7,6 @@ long int distanceL;
 long int distanceR;
 long int distance;
 long int left;
-long int right;
 int sensorLreset = 8;
 int sensorRreset = 7;
 int pwm;
@@ -76,3 +75,5 @@ void loop() {
     Serial.println(pwm);
 */
 }
+
+Timmeh
