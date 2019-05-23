@@ -1,0 +1,6 @@
+Pins aandrijving
+
+stepR	= A0
+dirR	= A1
+stepL	= A2
+dirL	= A3
