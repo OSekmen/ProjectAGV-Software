@@ -4,3 +4,42 @@ stepR	= A0
 dirR	= A1
 stepL	= A2
 dirL	= A3
+
+Berekening bijsturen v1
+speedMax = 200
+bijsturen = -50
+
+speedRMax = ?
+
+vermenigvuldigerR = 1 / (bijsturen / -100) = 1 / (-50 / -100) = 2
+speedRMax = vermenigvuldigerR * speedMax = 2 * 200 = 400			Klopt, snelheid is twee keer langzamer.
+
+controle test
+speedMax = 200
+bijsturen = -20
+
+speedRMax = ?
+
+vermenigvuldigerR = 1 / (bijsturen / -100) = 1 / (-20 / -100) = 5
+speedRMax = vermenigvuldigerR * speedMax = 5 * 200 = 1000			Klopt niet, snelheid hoort lager te zijn dan 400 zie vorige test.
+
+
+Berekening bijsturen v2
+speedMax = 200
+speedMin = 1000
+bijsturen = -20
+
+speedRmax = ?
+
+vermenigvuldigerR = -(speedMin - speedMax) / 100 = -(1000 - 200) / 100 = -8
+speedRMax = vermenigvuldigerR * bijsturen + speedMax = -8 * -20 + 200 = 360	Klopt.
+
+controle test
+speedMax = 200
+speedMin = 1000
+bijsturen = -75
+
+speedRMax = ?
+
+vermenigvuldigerR = -(speedMin - speedMax) / 100 = -(1000 - 200) / 100 = -8
+speedRMax = vermenigvuldigerR * bijsturen + speedMax = -8 * -75 + 200 = 800
