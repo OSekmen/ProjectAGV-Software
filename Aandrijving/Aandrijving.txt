@@ -42,4 +42,4 @@ bijsturen = -75
 speedRMax = ?
 
 vermenigvuldigerR = -(speedMin - speedMax) / 100 = -(1000 - 200) / 100 = -8
-speedRMax = vermenigvuldigerR * bijsturen + speedMax = -8 * -75 + 200 = 800
+speedRMax = vermenigvuldigerR * bijsturen + speedMax = -8 * -75 + 200 = 800	Klopt.
