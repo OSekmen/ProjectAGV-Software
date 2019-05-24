@@ -8,8 +8,11 @@ int stepLState = LOW;
 int stepRState = LOW;
 unsigned long previousLMillis = 0;
 unsigned long previousRMillis = 0;
-long intervalL = 1000;
-long intervalR = 500;
+int speedL = 0;
+unsigned int speedLMax = 400;
+int speedR = 0;
+unsigned int speedRMax = 300;
+
 
 void setup() {
   //Pins als output declareren
@@ -25,7 +28,7 @@ void loop() {
   unsigned long currentLMillis = millis();
   Serial.print("StepL: ");
   Serial.print(stepLState);
-  if (currentLMillis - previousLMillis >= intervalL) {
+  if (currentLMillis - previousLMillis >= speedL) {
     previousLMillis = currentLMillis;
     if (stepLState == LOW) {
       stepLState = HIGH;
@@ -40,7 +43,7 @@ void loop() {
   unsigned long currentRMillis = millis();
   Serial.print("StepR: ");
   Serial.println(stepRState);
-  if (currentRMillis - previousRMillis >= intervalR) {
+  if (currentRMillis - previousRMillis >= speedR) {
     previousRMillis = currentRMillis;
     if (stepRState == LOW) {
       stepRState = HIGH;
