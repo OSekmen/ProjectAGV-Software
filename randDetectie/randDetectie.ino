@@ -7,17 +7,15 @@ VL53L0X sensorR;
 
 VL53L0X sensorArray[] = { sensorL, sensorR };
 
-long int distanceL;
-long int distanceR;
+
 long int distance;
-long int left;
 int sensorLreset = 8;
 int sensorRreset = 7;
 int pwm;
 
 void setup() {
   // put your setup code here, to run once:
-  
+
   Wire.begin();
 
   pinMode(7, OUTPUT);
@@ -35,47 +33,48 @@ void setup() {
 
   //keep Left sensor on by pulling Right LOW, assign new adress
   digitalWrite(sensorRreset, LOW);
-  sensorL.init();
-  sensorL.setAddress(0x30);
-  sensorL.setTimeout(500);
+  sensorArray[0].init();
+  sensorArray[0].setAddress(0x30);
+  sensorArray[0].setTimeout(500);
 
   //repeat on Right Sensor
   digitalWrite(sensorRreset, HIGH);
-  sensorR.init();
-  sensorR.setAddress(0x31);
-  sensorR.setTimeout(0);
+  sensorArray[1].init();
+  sensorArray[1].setAddress(0x31);
+  sensorArray[1].setTimeout(0);
 
   Serial.begin(9600);
 }
 
 void loop() {
+  long int distanceL;
+  long int distanceR;
   // put your main code here, to run repeatedly:
-  distanceL = sensorL.readRangeSingleMillimeters();
-  distanceR = sensorR.readRangeSingleMillimeters();
-  distance = ((abs(75-distanceL)+abs(75-distanceR))/2);
-  pwm = map(distance,0,75,0,255);
+  distanceL = leesWaarde(sensorArray[0]);
+  distanceR = leesWaarde(sensorArray[1]);
+  
+  stuurRichting(distanceL, distanceR);
+}
+
+int stuurRichting(int long distanceL, int long distanceR) {
+  distance = ((abs(75 - distanceL) + abs(75 - distanceR)) / 2);
+
   if (distanceL < 70 && distanceR > 80) {
-    analogWrite(10, pwm);
-    digitalWrite(9, LOW);
+    pwm = map(distance, 0, 75, 0, 100);
+    Serial.println(pwm);
+    return pwm;
   } else if ( distanceL > 80 && distanceR < 70) {
-    analogWrite(9, pwm);
-    digitalWrite(10, LOW);
+    pwm = map(distance, 0, 75, 0, -100);
+    Serial.println(pwm);
+    return pwm;
   }
   else if (distanceL > 70 && distanceL < 80) {
-    digitalWrite(9, LOW);
-    digitalWrite(10, LOW);
+    pwm = 0;
+    return pwm;
   }
-
-    Serial.print("distanceL: ");
-    Serial.print(distanceL);
-    Serial.print("  distanceR: ");
-    Serial.println(distanceR);
-    Serial.print("  distance: ");
-    Serial.println(distance);
-    /*
-    Serial.print("75 -distance: ");
-    Serial.print(75 - distance);
-    Serial.print("  PWM: ");
-    Serial.println(pwm);
-*/
+}
+int leesWaarde(VL53L0X sensor) {
+  int waarde;
+  waarde = sensor.readRangeSingleMillimeters();
+  return waarde;
 }
