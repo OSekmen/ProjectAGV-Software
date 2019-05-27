@@ -1,0 +1,70 @@
+
+void nexWriteVal(String scherm, String element, int msg) {
+  String cmd;
+  cmd += scherm;
+  cmd += ".";
+  cmd += element;
+  cmd += ".val=";
+  cmd += msg;
+  Serial2.print(cmd);
+  Serial2.write(0xff);
+  Serial2.write(0xff);
+  Serial2.write(0xff);
+}
+
+void nexWriteSlid(String screen, String element, int msg, int mini1, int maxi1) {
+  int mapValue = map(msg, mini1, maxi1, 0, 100);
+  String cmd;
+  cmd += screen;
+  cmd += ".";
+  cmd += element;
+  cmd += ".val=";
+  cmd += mapValue;
+  Serial2.print(cmd);
+  Serial2.write(0xff);
+  Serial2.write(0xff);
+  Serial2.write(0xff);
+}
+
+void nexWriteTxt(String screen, String element, String msg) {
+  String cmd;
+  cmd += screen;
+  cmd += ".";
+  cmd += element;
+  cmd += ".txt=\"";
+  cmd += msg;
+  cmd += "\"";
+  Serial2.print(cmd);
+  Serial2.write(0xff);
+  Serial2.write(0xff);
+  Serial2.write(0xff);
+}
+//int targetX[8] = {35, 85, 145, 205, 270, 340, 415, 505};
+int targetX[8] = {35, 85, 145, 205, 270, 320, 375, 435};
+void setPositionXY() {
+  int offset;
+  if (command.substring(2, command.length()) == "opslag") {
+    //Serial.println("BEDOELT VOOR OPSLAG");
+    offset = 5;
+  } else if (command.substring(2, command.length()) == "laadruim") {
+    //Serial.println("BEDOELT VOOR laadruimte");
+    offset = 0;
+  }
+  //target.x = (((gridX.indexOf(command[0]) + offset) * interval ) - 30);
+  target.y = ((gridY.indexOf(command[1])) *  interval) + 80;
+  target.x = targetX[ (offset + gridX.indexOf(command[0]))];
+  Serial.print("xTarget = ");
+  Serial.print(target.x);
+  Serial.print("  yTarget = ");
+  Serial.print(target.y);
+}
+
+void setPositionZ() {
+  String temp;
+  int strength;
+  temp = command.substring(1, command.length());
+  strength = map(temp.toInt(), 0, 100, 156, 30);
+  target.z = strength;
+  Serial.print("  ZTarget = ");
+  Serial.println(target.z);
+}
