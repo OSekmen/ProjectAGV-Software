@@ -3,6 +3,10 @@
 
 VL53L0X sensorL;
 VL53L0X sensorR;
+
+
+VL53L0X sensorArray[] = { sensorL, sensorR };
+
 long int distanceL;
 long int distanceR;
 long int distance;
