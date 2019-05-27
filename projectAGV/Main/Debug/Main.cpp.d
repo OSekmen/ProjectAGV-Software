@@ -1,5 +1,5 @@
-C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\uno\Debug\Main.cpp.o: \
- C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\uno\Debug\Main.cpp \
+C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\mega_atmega2560\Debug\Main.cpp.o: \
+ C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\mega_atmega2560\Debug\Main.cpp \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/arduino.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/binary.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/WCharacter.h \
@@ -10,8 +10,9 @@ C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\uno\Debug\Main.cpp.o: \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/Printable.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/USBAPI.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/Arduino.h \
- C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\variants\standard/pins_arduino.h \
+ C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\variants\mega/pins_arduino.h \
  C:\Users\Bas\Documents\Arduino\libraries\Ultrasonic-3.0.0\src/Ultrasonic.h \
- C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\uno\Debug\ObstakelDetectie.h \
+ C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\mega_atmega2560\Debug\ObstakelDetectie.h \
+ C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/HardwareSerial.h \
  c:\program\ files\ (x86)\microsoft\ visual\ studio\2017\community\common7\ide\extensions\licbwbqy.qxk\Micro\ Platforms\default\debuggers\VM_DBG/VM_DBG.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/Arduino.h

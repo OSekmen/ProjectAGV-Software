@@ -9,13 +9,12 @@
 
 
 // the setup function runs once when you press reset or power the board
-void setup() 
-{
+void setup() {
 	setupObstakelDetectie();
 }
 
 // the loop function runs over and over again until power down or reset
-void loop() 
-{
+void loop() {
+	Serial.println(front.distance());
 	updateObstakelDetectie();
 }
