@@ -15,11 +15,6 @@ int sensorLreset = 8;
 int sensorRreset = 7;
 int pwm;
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> bf3b2e768cfed92d81cd2e55e7f3608ed9c61c36
 void setup() {
   // put your setup code here, to run once:
   
@@ -44,8 +39,6 @@ void setup() {
   sensorL.setAddress(0x30);
   sensorL.setTimeout(500);
 
-  hallo!
-
   //repeat on Right Sensor
   digitalWrite(sensorRreset, HIGH);
   sensorR.init();
@@ -60,11 +53,11 @@ void loop() {
   distanceL = sensorL.readRangeSingleMillimeters();
   distanceR = sensorR.readRangeSingleMillimeters();
   distance = ((abs(75-distanceL)+abs(75-distanceR))/2);
-  pwm = map(distance,20,75,0,255);
+  pwm = map(distance,0,75,0,255);
   if (distanceL < 70 && distanceR > 80) {
     analogWrite(10, pwm);
     digitalWrite(9, LOW);
-  } else if (distanceR < 70 && distanceL > 80) {
+  } else if ( distanceL > 80 && distanceR < 70) {
     analogWrite(9, pwm);
     digitalWrite(10, LOW);
   }
@@ -86,5 +79,3 @@ void loop() {
     Serial.println(pwm);
 */
 }
-
-Timmeh
