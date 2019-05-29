@@ -4,6 +4,7 @@
  Author:	Pim Stoopman
 */
 
+#include <Servo.h>
 #include <Ultrasonic.h>
 #include "ObstakelDetectie.h"
 
@@ -15,6 +16,5 @@ void setup() {
 
 // the loop function runs over and over again until power down or reset
 void loop() {
-	Serial.println(front.distance());
 	updateObstakelDetectie();
 }

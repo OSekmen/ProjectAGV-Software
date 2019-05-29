@@ -1,8 +1,11 @@
 #pragma once
+#include <Servo.h>
 #include <Ultrasonic.h>
 #include <HardwareSerial.h>
+#include "States.h"
 
 //#define DEBUG
+uint8_t dummyDirection = 1;
 
 #define NUM_MEASUREMENTS 15
 
@@ -11,6 +14,10 @@ private:
 	Ultrasonic us;
 	uint16_t measurements[NUM_MEASUREMENTS];
 	uint8_t index;
+	Servo servo;
+
+public:
+	bool servoAttached;
 
 public:
 	ObstakelDetectie() : us(Ultrasonic(0, 0)) {}
@@ -18,14 +25,22 @@ public:
 	/*
 	Obstakel Detectie constructor
 
-	@param trig trigger pin.
-	@param echo echo pin.
+	@param trig, trigger pin.
+	@param echo, echo pin.
+	@param timeOut, time out voor ultrasone sensor
+	@param servoPin, servo pin
 	*/
-	ObstakelDetectie(uint8_t trig, uint8_t echo) : us(Ultrasonic(trig, echo)) {
+	ObstakelDetectie(uint8_t trig, uint8_t echo, unsigned long timeOut = 20000UL, uint8_t servoPin = 0) 
+		: us(Ultrasonic(trig, echo, timeOut)) {
 		index = 0;
 		uint16_t m = us.read();
 		for (uint8_t i = 0; i < NUM_MEASUREMENTS; i++) {
 			measurements[i] = m;
+		}
+
+		servoAttached = servoPin ? true : false;
+		if (servoAttached) {
+			servo.attach(servoPin);
 		}
 	}
 
@@ -67,12 +82,17 @@ ObstakelDetectie front;
 // Obstakel module achterkant
 ObstakelDetectie back;
 
+
 void setupObstakelDetectie() {
-	front = ObstakelDetectie(6, 7);
+	front = ObstakelDetectie(6, 7, 20000UL, 0);
 	back = ObstakelDetectie(2, 2);
 }
 
 void updateObstakelDetectie() {
+#ifdef DEBUG
+	Serial.println(front.distance());
+#endif
+
 	front.read();
 	back.read();
 }
