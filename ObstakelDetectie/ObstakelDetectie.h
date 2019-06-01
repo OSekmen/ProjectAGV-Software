@@ -14,10 +14,10 @@ private:
 	Ultrasonic us;
 	uint16_t measurements[NUM_MEASUREMENTS];
 	uint8_t index;
-	Servo servo;
 
 public:
 	bool servoAttached;
+	Servo servo;
 
 public:
 	ObstakelDetectie() : us(Ultrasonic(0, 0)) {}
@@ -84,8 +84,9 @@ ObstakelDetectie back;
 
 
 void setupObstakelDetectie() {
-	front = ObstakelDetectie(6, 7, 20000UL, 0);
+	front = ObstakelDetectie(6, 7, 20000UL, 3);
 	back = ObstakelDetectie(2, 2);
+	front.servo.write(50);
 }
 
 void updateObstakelDetectie() {

@@ -24,7 +24,7 @@
     <ClInclude Include="..\..\ObstakelDetectie\ObstakelDetectie.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="States.h">
+    <ClInclude Include="..\..\ObstakelDetectie\States.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
