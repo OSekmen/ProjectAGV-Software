@@ -4,8 +4,9 @@
 #include <HardwareSerial.h>
 #include "States.h"
 
-//#define DEBUG
-uint8_t dummyDirection = 1;
+#define DEBUG
+int8_t dummyDirection = 1;
+int8_t dummyModus = 0;
 
 #define NUM_MEASUREMENTS 15
 
@@ -30,8 +31,8 @@ public:
 	@param timeOut, time out voor ultrasone sensor
 	@param servoPin, servo pin
 	*/
-	ObstakelDetectie(uint8_t trig, uint8_t echo, unsigned long timeOut = 20000UL, uint8_t servoPin = 0) 
-		: us(Ultrasonic(trig, echo, timeOut)) {
+	ObstakelDetectie(uint8_t trig, uint8_t echo, unsigned long timeOut = 20, uint8_t servoPin = 0) 
+		: us(Ultrasonic(trig, echo, timeOut * 1000)) {
 		index = 0;
 		uint16_t m = us.read();
 		for (uint8_t i = 0; i < NUM_MEASUREMENTS; i++) {
@@ -82,18 +83,60 @@ ObstakelDetectie front;
 // Obstakel module achterkant
 ObstakelDetectie back;
 
+float stopDistance = 4;
+const uint32_t updateTime_ms = 1000;
+uint64_t US_millis;
+State state;
+
+void startVolgModus() {
+
+}
 
 void setupObstakelDetectie() {
-	front = ObstakelDetectie(6, 7, 20000UL, 3);
-	back = ObstakelDetectie(2, 2);
-	front.servo.write(50);
+	front = ObstakelDetectie(6, 7, updateTime_ms, 3);
+	back = ObstakelDetectie(0, 0, updateTime_ms);
+
+	US_millis = millis();
+	front.servo.write(90);
 }
 
 void updateObstakelDetectie() {
-#ifdef DEBUG
-	Serial.println(front.distance());
-#endif
+	if (millis() - US_millis > updateTime_ms) {
+		front.read();
+		back.read();
 
-	front.read();
-	back.read();
+		US_millis = millis();
+		if (dummyModus == 0) { // normale modus
+			front.servo.write(90);
+			switch (dummyDirection) {
+			case -1:
+				if (back.distance() <= stopDistance) {
+					state = State::STOP;
+				}
+				else {
+					state = State::BACKWARD;
+				}
+				break;
+			case 0:
+				state = State::STOP;
+				break;
+			case 1:
+				if (front.distance() <= stopDistance) {
+					state = State::STOP;
+				}
+				else {
+					state = State::FORWARD;
+				}
+				break;
+			}
+		}
+
+		else if (dummyModus == 1) { // volg modus
+
+		}
+
+#ifdef DEBUG
+		Serial.println(front.distance());
+#endif
+	}
 }
