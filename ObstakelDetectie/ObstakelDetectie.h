@@ -10,11 +10,32 @@ LOGLEVEL 1: State en afstand
 LOGLEVEL 2: Gemiddelde
 */
 #define LOGLEVEL 1
-int8_t dummyDirection = 1;
-int8_t dummyModus = 0;
+
+/*
+Dummy variabelen moeten van andere software delen komen
+*/
+int8_t dummyDirection = 1; // -1 achteruit, 0 stilstand, 1 vooruit
+int8_t dummyMode = 1; // 0 normaal, 1 volgmode
 bool dummyBocht = false;
+// ---------------------------------------------------------------------
+const float stopDistance = 5;
+const float followDistanceMargin = 1;
+const uint32_t updateTime_ms = 1;
+uint64_t US_millis;
+State state;
+
+//const float millisPerDegree = 1.0 + 2.0 / 3.0;
+//const float scanAngle = 90; // Eenzijdig, maakt gebruik van symmetrie
+//const uint8_t scanPoints = 5; // Eenzijdig, maakt gebruik van symmetrie
 
 #define NUM_MEASUREMENTS 10
+#define NUM_SCANPOINTS 4
+//#define NUM_SCANPOINT_SCANS 10
+#define SCAN_FIELD_DEGREE 90
+#define MILLIS_PER_DEGREE (1.0 + 2.0 / 3.0)
+#define SCAN_MILLIS_MARGIN 10
+
+float scanPoints[NUM_SCANPOINTS];
 
 class ObstakelDetectie {
 private:
@@ -89,17 +110,11 @@ ObstakelDetectie front;
 // Obstakel module achterkant
 ObstakelDetectie back;
 
-const float stopDistance = 5;
-const float followDistanceMargin = 1;
-const uint32_t updateTime_ms = 10;
-uint64_t US_millis;
-State state;
+//float distanceToPerson;
 
-float distanceToPerson;
-
-void startFollowMode() {
+/*void startFollowMode() {
 	distanceToPerson = front.distance();
-}
+}*/
 
 #if LOGLEVEL >= 1
 void printState() {
@@ -132,15 +147,22 @@ void setupObstakelDetectie() {
 
 	US_millis = millis();
 	front.servo.write(90);
+
+	pinMode(32, INPUT_PULLUP);
 }
 
+uint32_t nextScanMillis;
+uint16_t scanIndex;
+uint16_t scanMeasureIndex;
+
 void updateObstakelDetectie() {
+	dummyBocht = !digitalRead(32);
 	if (millis() - US_millis > updateTime_ms) {
 		front.read();
 		back.read();
 
 		US_millis = millis();
-		if (dummyModus == 0) { // normale modus
+		if (dummyMode == 0) { // normale mode
 			front.servo.write(90);
 			switch (dummyDirection) {
 			case -1:
@@ -165,8 +187,105 @@ void updateObstakelDetectie() {
 			}
 		}
 
-		else if (dummyModus == 1) { // volg modus
+		else if (dummyMode == 1) { // volg mode
 			float distance = front.distance();
+			switch (state) {
+			case State::FORWARD:
+				// De AGV komt binnen volg afstand en moet daarvoor stoppen
+				if (distance <= stopDistance + followDistanceMargin) {
+					state = State::STOP;
+				}
+
+				// AGV komt aan bij een bocht, hier moet hij eerst stoppen voordat hij kan gaan scannen
+				else if (dummyBocht) {
+					state = State::STOP;
+				}
+				break;
+			case State::BACKWARD:
+				// De AGV komt binnen volg afstand en moet daarvoor stoppen
+				if (distance >= stopDistance - followDistanceMargin) {
+					state = State::STOP;
+				}
+
+				// De AGV kan niet verder achteruit rijden
+				else if (back.distance() < stopDistance && dummyDirection == -1) {
+					state = State::STOP;
+				}
+				break;
+			case State::LEFT:
+				break;
+			case State::RIGHT:
+				break;
+			case State::STOP:
+				// De AGV staat bij een bocht en de volgpersoon is naar links of rechts gegaan, nu moet de AGV gaan scannen
+				if (dummyBocht && distance > 10) {
+					state = State::SCANNING;
+					for (uint8_t i = 0; i < NUM_SCANPOINTS; i++) {
+						scanPoints[i] = 0;
+					}
+					scanMeasureIndex = 0;
+					scanIndex = 0;
+					float targetAngle = scanIndex * SCAN_FIELD_DEGREE / (NUM_SCANPOINTS - 1) - SCAN_FIELD_DEGREE / 2.0 + 90;
+					nextScanMillis = millis() + abs(front.servo.read() - targetAngle) * MILLIS_PER_DEGREE + SCAN_MILLIS_MARGIN;
+					front.servo.write(targetAngle);
+				}
+
+				// De AGV is te ver weg verwijderd van de volgpersoon en moet hierdoor vooruit
+				else if (distance > stopDistance + followDistanceMargin && !dummyBocht) {
+					state = State::FORWARD;
+				}
+
+				// De AGV komt te dichtbij de volgpersoon en moet hierdoor achteruit
+				if (distance < stopDistance - followDistanceMargin) {
+					state = State::BACKWARD;
+				}
+				break;
+			case State::SCANNING:
+				//TODO 2 soorten bochten (T- bocht van onder en T- bocht van boven)
+				if (millis() >= nextScanMillis) {
+					scanPoints[scanIndex] += distance / NUM_MEASUREMENTS;
+					scanMeasureIndex++;
+
+					if (scanMeasureIndex >= NUM_MEASUREMENTS) {
+						scanMeasureIndex = 0;
+						scanIndex++;
+
+						if (scanIndex >= NUM_SCANPOINTS) {
+							// DO THE MAGIC
+							state = State::LEFT;
+							front.servo.write(90);
+							break;
+						}
+						
+						//TODO reset position
+						//nextScanMillis = millis() + ((float)SCAN_ANGLE_DEGREE / (float)NUM_SCANPOINTS) * MILLIS_PER_DEGREE + SCAN_MILLIS_MARGIN;
+						//front.servo.write(front.servo.read() + ((float)SCAN_ANGLE_DEGREE / (float)NUM_SCANPOINTS));
+						float targetAngle = scanIndex * SCAN_FIELD_DEGREE / (NUM_SCANPOINTS - 1) - SCAN_FIELD_DEGREE / 2.0 + 90;
+						nextScanMillis = millis() + abs(front.servo.read() - targetAngle) * MILLIS_PER_DEGREE + SCAN_MILLIS_MARGIN;
+						front.servo.write(targetAngle);
+					}
+				}
+				break;
+			}
+			
+			
+			
+			
+			/*
+			// AGV komt bij bocht, hij moet eerst stoppen voordat hij mag scannen
+			if (dummyBocht && state != State::SCANNING && dummyDirection != 0) {
+				state = State::STOP;
+			}
+			// AGV staat stil bij bocht maar scant nog niet
+			else if (dummyBocht && state != State::SCANNING && dummyDirection == 0) {
+				state = State::SCANNING;
+				scanIndex = 0;
+				nextScanMillis = millis() + SCAN_ANGLE_DEGREE * MILLIS_PER_DEGREE + SCAN_MILLIS_MARGIN;
+				front.servo.write(90 - SCAN_ANGLE_DEGREE);
+			}
+
+
+
 			if (distance > stopDistance + followDistanceMargin) {
 				state = State::FORWARD;
 			}
@@ -175,7 +294,7 @@ void updateObstakelDetectie() {
 			}
 			else {
 				state = State::STOP;
-			}
+			}*/
 		}
 
 #if LOGLEVEL >= 1
@@ -183,6 +302,11 @@ void updateObstakelDetectie() {
 		printState();
 		Serial.print(", Afstand: ");
 		Serial.println(front.distance());
+		for (uint8_t i = 0; i < NUM_SCANPOINTS; i++) {
+			Serial.print(" ");
+			Serial.print(scanPoints[i]);
+		}
+		Serial.println();
 #endif
 	}
 }
