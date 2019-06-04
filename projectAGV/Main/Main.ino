@@ -4,18 +4,20 @@
  Author:	Pim Stoopman
 */
 
+#include <Servo.h>
+#include <Ultrasonic.h>
+#include "ObstakelDetectie.h"
 
 
 // the setup function runs once when you press reset or power the board
-void setup() 
-{
-
+void setup() {
+	Serial.begin(9600);
+	setupObstakelDetectie();
 }
 
 // the loop function runs over and over again until power down or reset
-void loop() 
-{
-  
+void loop() {
+	updateObstakelDetectie();
 }
 
 
