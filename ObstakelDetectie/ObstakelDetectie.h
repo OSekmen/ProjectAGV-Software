@@ -4,11 +4,17 @@
 #include <HardwareSerial.h>
 #include "States.h"
 
-#define DEBUG
+/*
+LOGLEVEL 0: Geen logs
+LOGLEVEL 1: State en afstand
+LOGLEVEL 2: Gemiddelde
+*/
+#define LOGLEVEL 1
 int8_t dummyDirection = 1;
 int8_t dummyModus = 0;
+bool dummyBocht = false;
 
-#define NUM_MEASUREMENTS 15
+#define NUM_MEASUREMENTS 10
 
 class ObstakelDetectie {
 private:
@@ -66,7 +72,7 @@ public:
 		for (uint8_t i = 0; i < NUM_MEASUREMENTS; i++) {
 			v += measurements[i];
 
-#ifdef DEBUG
+#if LOGLEVEL >= 2
 			Serial.print(measurements[i]);
 			if (i == NUM_MEASUREMENTS - 1) Serial.println();
 			else Serial.print(" ");
@@ -83,14 +89,42 @@ ObstakelDetectie front;
 // Obstakel module achterkant
 ObstakelDetectie back;
 
-float stopDistance = 4;
-const uint32_t updateTime_ms = 1000;
+const float stopDistance = 5;
+const float followDistanceMargin = 1;
+const uint32_t updateTime_ms = 10;
 uint64_t US_millis;
 State state;
 
-void startVolgModus() {
+float distanceToPerson;
 
+void startFollowMode() {
+	distanceToPerson = front.distance();
 }
+
+#if LOGLEVEL >= 1
+void printState() {
+	switch (state) {
+	case State::FORWARD:
+		Serial.print("FORWARD");
+		break;
+	case State::BACKWARD:
+		Serial.print("BACKWARD");
+		break;
+	case State::LEFT:
+		Serial.print("LEFT");
+		break;
+	case State::RIGHT:
+		Serial.print("RIGHT");
+		break;
+	case State::STOP:
+		Serial.print("STOP");
+		break;
+	case State::SCANNING:
+		Serial.print("SCANNING");
+		break;
+	}
+}
+#endif
 
 void setupObstakelDetectie() {
 	front = ObstakelDetectie(6, 7, updateTime_ms, 3);
@@ -132,10 +166,22 @@ void updateObstakelDetectie() {
 		}
 
 		else if (dummyModus == 1) { // volg modus
-
+			float distance = front.distance();
+			if (distance > stopDistance + followDistanceMargin) {
+				state = State::FORWARD;
+			}
+			else if (distance < stopDistance - followDistanceMargin) {
+				state = State::BACKWARD;
+			}
+			else {
+				state = State::STOP;
+			}
 		}
 
-#ifdef DEBUG
+#if LOGLEVEL >= 1
+		Serial.print("State: ");
+		printState();
+		Serial.print(", Afstand: ");
 		Serial.println(front.distance());
 #endif
 	}
