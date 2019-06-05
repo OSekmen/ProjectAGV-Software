@@ -1,16 +1,18 @@
 
-VL53L0X sensorL;
-VL53L0X sensorR;
+VL53L0X sensorRand_L;
+VL53L0X sensorRand_R;
+VL53L0X sensorBoom_L;
+VL53L0X sensorBoom_R;
 
-VL53L0X sensorArray[] = { sensorL, sensorR };
+VL53L0X sensorArray[] = { sensorRand_L, sensorRand_R, sensorBoom_L, sensorBoom_R };
 const int sensorAddresses[] = { 0x30, 0x31, 0x32, 0x33 };
 
 enum sensorName
 {
-	Rand_L,
-	Rand_R,
-	Boom_L,
-	Boom_R
+	Rand_L = 0,
+	Rand_R = 1,
+	Boom_L = 2,
+	Boom_R = 3
 }SensorName;
 
 

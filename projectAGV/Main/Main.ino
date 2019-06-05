@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <TimerOne.h>
 
 #include <VL53L0X.h>
@@ -63,10 +64,26 @@ void setup()
 
   Timer1.initialize(500); // set a timer of length 100000 microseconds (or 0.1 sec - or 10Hz => the led will blink 5 times, 5 cycles of on-and-off, per second) 
   Timer1.attachInterrupt( timerIsr ); // attach the service routine here
+=======
+/*
+ Name:		Main.ino
+ Created:	5/21/2019 1:37:04 PM
+ Author:	Pim Stoopman
+*/
+
+#include <Servo.h>
+#include <Ultrasonic.h>
+#include "ObstakelDetectie.h"
+>>>>>>> 6ff3dbc744a0c1a72c82ee958089a8e534bf8ac8
 
 
+// the setup function runs once when you press reset or power the board
+void setup() {
+	Serial.begin(9600);
+	setupObstakelDetectie();
 }
 
+<<<<<<< HEAD
 void timerIsr() {
 // Toggle LED  static unsigned long clck=0;
   //unsigned long currentMillis = micros();
@@ -120,4 +137,11 @@ void loop()
     digitalWrite(stepR, LOW);
     clckR = 0;
   }*/
+=======
+// the loop function runs over and over again until power down or reset
+void loop() {
+	updateObstakelDetectie();
+>>>>>>> 6ff3dbc744a0c1a72c82ee958089a8e534bf8ac8
 }
+
+
