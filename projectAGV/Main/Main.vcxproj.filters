@@ -27,5 +27,14 @@
     <ClInclude Include="..\..\ObstakelDetectie\States.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Aandrijving\Aandrijving\Aandrijving.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\bomenDetectie\BoomDetectieCode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\randDetectie\randDetectie.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
