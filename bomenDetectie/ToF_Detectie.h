@@ -32,14 +32,25 @@ void resetToFsensor(uint8_t sensorNumber) {
 	uint16_t curr_time = millis();
 	switch (resetProcress[sensorNumber]) {
 	case 0:
-		digitalWrite(sensorPinResetArray[sensorNumber], false);
+		digitalWrite(LATCHPIN, LOW);
+		IC_REG = IC_REG & ~sensorPinResetArray[sensorNumber];
+		shiftOut(DATAPIN, CLOCKPIN, LSBFIRST, IC_REG);
+		digitalWrite(LATCHPIN, HIGH);
+
 		prev_time[sensorNumber] = curr_time;
 		resetProcress[sensorNumber] = 1;
 		break;
 
 	case 1:
 		if (curr_time >= (prev_time[sensorNumber] + timeOut)) {
-			digitalWrite(sensorPinResetArray[sensorNumber], true);
+			digitalWrite(LATCHPIN, LOW);
+			IC_REG = IC_REG | sensorPinResetArray[sensorNumber];
+			shiftOut(DATAPIN, CLOCKPIN, LSBFIRST, IC_REG);
+			digitalWrite(LATCHPIN, HIGH);
+
+
+			//digitalWrite(sensorPinResetArray[sensorNumber], HIGH);
+
 			prev_time[sensorNumber] = curr_time;
 			resetProcress[sensorNumber] = 2;
 		}
@@ -47,9 +58,9 @@ void resetToFsensor(uint8_t sensorNumber) {
 
 	case 2:
 		if (curr_time >= (prev_time[sensorNumber] + timeOut)) {
-			digitalWrite(sensorPinResetArray[sensorNumber], true);
+			/*digitalWrite(sensorPinResetArray[sensorNumber], HIGH);
 			prev_time[sensorNumber] = curr_time;
-
+*/
 			sensorArray[sensorNumber].init();
 			sensorArray[sensorNumber].setAddress(sensorAddresses[sensorNumber]);
 			sensorArray[sensorNumber].setTimeout(500);
@@ -58,6 +69,25 @@ void resetToFsensor(uint8_t sensorNumber) {
 		}
 		break;
 	}
+}
+
+void setupResetToFsensor(uint8_t sensorNumber) {
+	//digitalWrite(sensorPinResetArray[sensorNumber], LOW); //output
+	digitalWrite(LATCHPIN, LOW);
+	IC_REG = IC_REG & ~sensorPinResetArray[sensorNumber];
+	shiftOut(DATAPIN, CLOCKPIN, LSBFIRST, IC_REG);
+	digitalWrite(LATCHPIN, HIGH);
+	delay(10);
+	//digitalWrite(sensorPinResetArray[sensorNumber], HIGH);
+	digitalWrite(LATCHPIN, LOW);
+	IC_REG = IC_REG | sensorPinResetArray[sensorNumber];
+	shiftOut(DATAPIN, CLOCKPIN, LSBFIRST, IC_REG);
+	digitalWrite(LATCHPIN, HIGH);
+	delay(10);
+
+	sensorArray[sensorNumber].init();
+	sensorArray[sensorNumber].setAddress(sensorAddresses[sensorNumber]);
+	sensorArray[sensorNumber].setTimeout(500);
 }
 
 bool ScanTree(uint8_t sensorNumber) {
@@ -134,7 +164,7 @@ int stuurRichting(int long distanceL, int long distanceR) {
 
 
 void setup_ToF_Detectie() {
-	for (int i = 0; i <= 3; i++) { resetToFsensor(i); }
+	for (int i = 0; i <= 3; i++) { setupResetToFsensor(i); }
 }
 
 void loop_ToF_Detectie() {
