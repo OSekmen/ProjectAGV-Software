@@ -11,15 +11,14 @@
 #include <Servo.h>
 #include <Ultrasonic.h>
 
-#include "Aandrijving.h"
-#include "BoomDetectieCode.h"
+//#include "Aandrijving.h"
+#include "ToF_Detectie.h"
 #include "ObstakelDetectie.h"
-#include "randDetectie.h"
 
-VL53L0X sensorL;
+/*VL53L0X sensorL;
 VL53L0X sensorR;
 
-VL53L0X sensorArray[] = { sensorL, sensorR };
+VL53L0X sensorArray[] = { sensorL, sensorR };*/
 
 int stepL = 2;
 int dirL = 5;
@@ -37,16 +36,16 @@ int distanceL;
 int distanceR;
 int sensorLreset = 13;
 int sensorRreset = 12;
-int pwm;
+//int pwm;
 
 void setup() {
 	Serial.begin(9600);
 
-	setupAandrijving();
+	//setupAandrijving();
 	setupObstakelDetectie();
-	setupRandDetectie();
+	setup_ToF_Detectie();
 
-	Wire.begin();
+/*	Wire.begin();
 	pinMode(stepL, OUTPUT);
 	pinMode(dirL, OUTPUT);
 	pinMode(stepR, OUTPUT);
@@ -77,15 +76,14 @@ void setup() {
 	sensorArray[1].setAddress(0x31);
 	sensorArray[1].setTimeout(0);
 
-	Serial.begin(9600);
+	//Serial.begin(9600);
 
 	Timer1.initialize(500); // set a timer of length 100000 microseconds (or 0.1 sec - or 10Hz => the led will blink 5 times, 5 cycles of on-and-off, per second) 
 	Timer1.attachInterrupt(timerIsr); // attach the service routine here
+*/
 }
 
-void timerIsr() {
-	// Toggle LED  static unsigned long clck=0;
-
+/*void timerIsr() {
 	clckL += 1;
 	clckR += 1;
 	clck += 1;
@@ -100,17 +98,16 @@ void timerIsr() {
 		digitalWrite(stepR, LOW);
 		clckR = 0;
 	}
-}
+}*/
 
 
 void loop() {
-	if (clck == 200) {
+	/*if (clck == 200) {
 		pwm = map(sensorArray[0].readRangeSingleMillimeters(), 30, 150, 1, 15);
 		clck = 0;
-	}
-	// the loop function runs over and over again until power down or reset
-	loopAandrijving();
-	loopObstakelDetectie();
-	loopRandDetectie();
+	}*/
 
+	//loopAandrijving();
+	loopObstakelDetectie();
+	loop_ToF_Detectie();
 }

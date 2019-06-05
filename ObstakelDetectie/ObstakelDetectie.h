@@ -3,6 +3,7 @@
 #include <Ultrasonic.h>
 #include <HardwareSerial.h>
 #include "States.h"
+#include "Pins.h"
 
 /*
 LOGLEVEL 0: Geen logs
@@ -131,8 +132,8 @@ void printState() {
 #endif
 
 void setupObstakelDetectie() {
-	front = ObstakelDetectie(6, 7, updateTime_ms, 3);
-	back = ObstakelDetectie(0, 0, updateTime_ms);
+	front = ObstakelDetectie(FRONT_TRIGGER, FRONT_ECHO, updateTime_ms, SERVO);
+	back = ObstakelDetectie(BACK_TRIGGER, BACK_ECHO, updateTime_ms);
 
 	US_millis = millis();
 	front.servo.write(90);

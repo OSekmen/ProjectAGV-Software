@@ -21,7 +21,61 @@ unsigned int speedRMax = 200; //Max snelheid rechter motor.
 int bijsturen; //Waarde van -100 t/m 100, -100 betekent hard veel naar links, 100 betekent veel naar rechts.
 int boom = 0; //Wanneer 0 betekent geen boom je kan rijden, wanneer 1 betekent boom wacht tot deze weer 0 is.
 
-void aandrijving() {
+void bijstuurSnelheid() {
+	if (bijsturen != 0) {
+		if (bijsturen > 0) { //SPEEDMIN is de langzaamste waarde voordat de AGV stilstaat, dit bepaald ook hoe groot de ramp up is.
+			speedLMax = (((SPEEDMIN - SPEEDMAX) / 100) * bijsturen + SPEEDMAX);
+		}
+		if (bijsturen < 0) {
+			speedRMax = (-((SPEEDMIN - SPEEDMAX) / 100) * bijsturen + SPEEDMAX);
+		}
+	}
+	else {
+		speedLMax = SPEEDMAX; //Wanneer er niet bijgestuurd hoeft te worden mag links maximale snelheid.
+		speedRMax = SPEEDMAX; //Wanneer er niet bijgestuurd hoeft te worden mag rechts maximale snelheid.
+	}
+	//Serial.print("   ");
+	//Serial.print("speedLMax: ");
+	//Serial.print(speedLMax);
+	//Serial.print("   ");
+	//Serial.print("speedRMax: ");
+	//Serial.print(speedRMax);
+	//Serial.print("   ");
+}
+
+void bijstuurwaarde() { //Deze tijdelijke functie vertaald de waarde van de pot in een percentage sturen.
+	int potWaarde;
+	potWaarde = analogRead(pot);
+	//Serial.print("potWaarde: ");
+	//Serial.print(potWaarde);
+	//Serial.print("   ");
+	if (potWaarde < 400) { //Wanneer de pot waarde minder dan 400 is wordt het een waarde van -1 tot -100.
+		bijsturen = ((potWaarde / 4) - 100);
+	}
+	if ((potWaarde >= 400) && (potWaarde < 623)) { //Wanneer de pot waarde tussen de 400 en 622 ligt wordt het een waarde van 0.
+		bijsturen = 0;
+	}
+	if (potWaarde >= 623) {
+		bijsturen = ((potWaarde - 623) / 4); //Wanneer de pot waarde meer dan 622 is wordt het een waarde van 1 tot 100.
+	}
+	//Serial.print("bijsturen: ");
+	//Serial.print(bijsturen);
+	//Serial.print("   ");
+}
+
+
+void setupAandrijving() {
+	//Inputs en outputs declareren
+	pinMode(stepL, OUTPUT);
+	pinMode(dirL, OUTPUT);
+	pinMode(stepR, OUTPUT);
+	pinMode(dirR, OUTPUT);
+	pinMode(pot, INPUT);
+
+	//Serial.begin(9600);
+}
+
+void loopAandrijving() {
 	bijstuurwaarde();
 	bijstuurSnelheid();
 
@@ -92,62 +146,4 @@ void aandrijving() {
 		}
 		digitalWrite(stepR, stepRState);
 	}
-}
-
-void bijstuurSnelheid() {
-	if (bijsturen != 0) {
-		if (bijsturen > 0) { //SPEEDMIN is de langzaamste waarde voordat de AGV stilstaat, dit bepaald ook hoe groot de ramp up is.
-			speedLMax = (((SPEEDMIN - SPEEDMAX) / 100) * bijsturen + SPEEDMAX);
-		}
-		if (bijsturen < 0) {
-			speedRMax = (-((SPEEDMIN - SPEEDMAX) / 100) * bijsturen + SPEEDMAX);
-		}
-	}
-	else {
-		speedLMax = SPEEDMAX; //Wanneer er niet bijgestuurd hoeft te worden mag links maximale snelheid.
-		speedRMax = SPEEDMAX; //Wanneer er niet bijgestuurd hoeft te worden mag rechts maximale snelheid.
-	}
-	//Serial.print("   ");
-	//Serial.print("speedLMax: ");
-	//Serial.print(speedLMax);
-	//Serial.print("   ");
-	//Serial.print("speedRMax: ");
-	//Serial.print(speedRMax);
-	//Serial.print("   ");
-}
-
-void bijstuurwaarde() { //Deze tijdelijke functie vertaald de waarde van de pot in een percentage sturen.
-	int potWaarde;
-	potWaarde = analogRead(pot);
-	//Serial.print("potWaarde: ");
-	//Serial.print(potWaarde);
-	//Serial.print("   ");
-	if (potWaarde < 400) { //Wanneer de pot waarde minder dan 400 is wordt het een waarde van -1 tot -100.
-		bijsturen = ((potWaarde / 4) - 100);
-	}
-	if ((potWaarde >= 400) && (potWaarde < 623)) { //Wanneer de pot waarde tussen de 400 en 622 ligt wordt het een waarde van 0.
-		bijsturen = 0;
-	}
-	if (potWaarde >= 623) {
-		bijsturen = ((potWaarde - 623) / 4); //Wanneer de pot waarde meer dan 622 is wordt het een waarde van 1 tot 100.
-	}
-	//Serial.print("bijsturen: ");
-	//Serial.print(bijsturen);
-	//Serial.print("   ");
-}
-
-
-void setupAandrijving() {
-	//Inputs en outputs declareren
-	pinMode(stepL, OUTPUT);
-	pinMode(dirL, OUTPUT);
-	pinMode(stepR, OUTPUT);
-	pinMode(dirR, OUTPUT);
-	pinMode(pot, INPUT);
-
-	Serial.begin(9600);
-}
-
-void loopAandrijving() {
-	aandrijving();
 }

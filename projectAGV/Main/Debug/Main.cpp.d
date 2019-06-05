@@ -20,6 +20,8 @@ C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\mega_atmega2560\Debug\Main.cpp.o: 
  C:\Program\ Files\ (x86)\Arduino\libraries\Servo\src/Servo.h \
  C:\Program\ Files\ (x86)\Arduino\libraries\Servo\src/avr/ServoTimers.h \
  C:\Users\Bas\Documents\Arduino\libraries\Ultrasonic-3.0.0\src/Ultrasonic.h \
+ C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\mega_atmega2560\Debug\ToF_Detectie.h \
+ C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\mega_atmega2560\Debug\Pins.h \
  C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\mega_atmega2560\Debug\ObstakelDetectie.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/HardwareSerial.h \
  C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\mega_atmega2560\Debug\States.h \
