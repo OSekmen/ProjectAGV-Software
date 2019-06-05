@@ -144,7 +144,7 @@ uint32_t nextScanMillis;
 uint16_t scanIndex;
 uint16_t scanMeasureIndex;
 
-void updateObstakelDetectie() {
+void loopObstakelDetectie() {
 	dummyBocht = !digitalRead(32);
 	if (millis() - US_millis > updateTime_ms) {
 		front.read();

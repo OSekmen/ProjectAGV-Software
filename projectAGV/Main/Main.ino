@@ -10,7 +10,11 @@
 
 #include <Servo.h>
 #include <Ultrasonic.h>
+
+#include "Aandrijving.h"
+#include "BoomDetectieCode.h"
 #include "ObstakelDetectie.h"
+#include "randDetectie.h"
 
 VL53L0X sensorL;
 VL53L0X sensorR;
@@ -37,7 +41,10 @@ int pwm;
 
 void setup() {
 	Serial.begin(9600);
+
+	setupAandrijving();
 	setupObstakelDetectie();
+	setupRandDetectie();
 
 	Wire.begin();
 	pinMode(stepL, OUTPUT);
@@ -102,7 +109,8 @@ void loop() {
 		clck = 0;
 	}
 	// the loop function runs over and over again until power down or reset
-	updateObstakelDetectie();
+	loopAandrijving();
+	loopObstakelDetectie();
+	loopRandDetectie();
+
 }
-
-

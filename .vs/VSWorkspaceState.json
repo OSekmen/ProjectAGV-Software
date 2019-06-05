@@ -2,8 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\ObstakelDetectie",
+    "\\projectAGV",
     "\\projectAGV\\Main"
   ],
-  "SelectedNode": "\\ObstakelDetectie\\ObstakelDetectie.h",
+  "SelectedNode": "\\projectAGV\\Main\\Main.ino",
   "PreviewInSolutionExplorer": false
 }

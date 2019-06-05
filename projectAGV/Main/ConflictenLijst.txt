@@ -1,0 +1,10 @@
+--------
+stepL, dirL, stepR, dirR
+Staat in Main.ino en in Aandrijving.h
+--------
+In Main.ino staat code voor vermoedelijk randDetectie maar er staat niet precies hetzelfde in randDetectie.h
+--------
+Redefinition sensorArray in rand en bomendetectie
+--------
+sersorResetArray en resetProcress funtie in BoomDetectieCode.h ???
+--------

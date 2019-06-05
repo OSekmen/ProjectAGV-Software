@@ -21,21 +21,6 @@ unsigned int speedRMax = 200; //Max snelheid rechter motor.
 int bijsturen; //Waarde van -100 t/m 100, -100 betekent hard veel naar links, 100 betekent veel naar rechts.
 int boom = 0; //Wanneer 0 betekent geen boom je kan rijden, wanneer 1 betekent boom wacht tot deze weer 0 is.
 
-void setup() {
-	//Inputs en outputs declareren
-	pinMode(stepL, OUTPUT);
-	pinMode(dirL, OUTPUT);
-	pinMode(stepR, OUTPUT);
-	pinMode(dirR, OUTPUT);
-	pinMode(pot, INPUT);
-
-	Serial.begin(9600);
-}
-
-void loop() {
-	aandrijving();
-}
-
 void aandrijving() {
 	bijstuurwaarde();
 	bijstuurSnelheid();
@@ -149,4 +134,20 @@ void bijstuurwaarde() { //Deze tijdelijke functie vertaald de waarde van de pot 
 	//Serial.print("bijsturen: ");
 	//Serial.print(bijsturen);
 	//Serial.print("   ");
+}
+
+
+void setupAandrijving() {
+	//Inputs en outputs declareren
+	pinMode(stepL, OUTPUT);
+	pinMode(dirL, OUTPUT);
+	pinMode(stepR, OUTPUT);
+	pinMode(dirR, OUTPUT);
+	pinMode(pot, INPUT);
+
+	Serial.begin(9600);
+}
+
+void loopAandrijving() {
+	aandrijving();
 }
