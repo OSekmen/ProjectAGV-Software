@@ -28,7 +28,7 @@ void setup() {
   pinMode(stepR, OUTPUT);
   pinMode(dirR, OUTPUT);
   pinMode(pot, INPUT);
-  
+
   Serial.begin(9600);
 }
 
@@ -61,7 +61,7 @@ void aandrijving() {
   if (speedL < speedLMax) {
     speedL = speedL + RAMP; //Wanneer de maximale snelheid links overschreiden is zal de motor vertragen, de vertraging verandert door de RAMP.
   }
-  
+
   Serial.print("StepL: ");
   Serial.print(stepLState);
   if (currentLMillis - previousLMillis >= speedL) {
@@ -141,7 +141,7 @@ void bijstuurwaarde() { //Deze tijdelijke functie vertaald de waarde van de pot 
   if ((potWaarde >= 400) && (potWaarde < 623)) { //Wanneer de pot waarde tussen de 400 en 622 ligt wordt het een waarde van 0.
     bijsturen = 0;
   }
-  if (potWaarde >= 623){
+  if (potWaarde >= 623) {
     bijsturen = ((potWaarde - 623) / 4); //Wanneer de pot waarde meer dan 622 is wordt het een waarde van 1 tot 100.
   }
   //Serial.print("bijsturen: ");
