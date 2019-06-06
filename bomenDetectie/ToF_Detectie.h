@@ -1,5 +1,6 @@
 #pragma once
 #include "Pins.h"
+#include "SharedGlobalVariables.h"
 
 VL53L0X sensorRand_L;
 VL53L0X sensorRand_R;
@@ -21,7 +22,8 @@ enum sensorName {
 } SensorName;
 
 long int Distance; // afstand tot hek
-int pwm;
+//int pwm; vervangen door bijstuurWaarde
+
 
 void resetToFsensor(uint8_t sensorNumber) {
 	const  uint16_t timeOut = 10;
@@ -145,18 +147,18 @@ int stuurRichting(int long distanceL, int long distanceR) {
 	Distance = ((abs(75 - distanceL) + abs(75 - distanceR)) / 2);
 
 	if (distanceL < 70 && distanceR > 80) {
-		pwm = map(Distance, 0, 75, 0, 100);
-		Serial.println(pwm);
-		return pwm;
+		bijstuurWaarde = map(Distance, 0, 75, 0, 100);
+		Serial.println(bijstuurWaarde);
+		return bijstuurWaarde;
 	}
 	else if (distanceL > 80 && distanceR < 70) {
-		pwm = map(Distance, 0, 75, 0, -100);
-		Serial.println(pwm);
-		return pwm;
+		bijstuurWaarde = map(Distance, 0, 75, 0, -100);
+		Serial.println(bijstuurWaarde);
+		return bijstuurWaarde;
 	}
 	else if (distanceL > 70 && distanceL < 80) {
-		pwm = 0;
-		return pwm;
+		bijstuurWaarde = 0;
+		return bijstuurWaarde;
 	}
 }
 #pragma endregion

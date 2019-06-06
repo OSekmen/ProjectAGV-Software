@@ -1,4 +1,4 @@
-C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\mega_atmega2560\Debug\VM_DBG\VM_DBG.cpp.o: \
+C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\micro\Debug\VM_DBG\VM_DBG.cpp.o: \
  c:\program\ files\ (x86)\microsoft\ visual\ studio\2017\community\common7\ide\extensions\1tuiup1i.zbk\Micro\ Platforms\default\debuggers\VM_DBG\VM_DBG.cpp \
  c:\program\ files\ (x86)\microsoft\ visual\ studio\2017\community\common7\ide\extensions\1tuiup1i.zbk\Micro\ Platforms\default\debuggers\VM_DBG\VM_DBG.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/Arduino.h \
@@ -11,4 +11,7 @@ C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\mega_atmega2560\Debug\VM_DBG\VM_DB
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/Printable.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/USBAPI.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/Arduino.h \
- C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\variants\mega/pins_arduino.h
+ C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/USBDesc.h \
+ C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/USBCore.h \
+ C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\variants\micro/pins_arduino.h \
+ c:\users\bas\appdata\local\arduino15\packages\arduino\hardware\avr\1.6.23\variants\leonardo\pins_arduino.h

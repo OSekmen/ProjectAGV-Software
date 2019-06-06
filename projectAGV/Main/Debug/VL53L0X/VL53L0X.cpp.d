@@ -1,4 +1,4 @@
-C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\mega_atmega2560\Debug\VL53L0X\VL53L0X.cpp.o: \
+C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\micro\Debug\VL53L0X\VL53L0X.cpp.o: \
  C:\Users\Bas\Documents\Arduino\libraries\VL53L0X\VL53L0X.cpp \
  C:\Users\Bas\Documents\Arduino\libraries\VL53L0X/VL53L0X.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/Arduino.h \
@@ -11,6 +11,9 @@ C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\mega_atmega2560\Debug\VL53L0X\VL53
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/Printable.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/USBAPI.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/Arduino.h \
- C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\variants\mega/pins_arduino.h \
+ C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/USBDesc.h \
+ C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/USBCore.h \
+ C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\variants\micro/pins_arduino.h \
+ c:\users\bas\appdata\local\arduino15\packages\arduino\hardware\avr\1.6.23\variants\leonardo\pins_arduino.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\libraries\Wire\src/Wire.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/Stream.h

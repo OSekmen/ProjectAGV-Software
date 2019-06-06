@@ -4,6 +4,7 @@
 #include <HardwareSerial.h>
 #include "States.h"
 #include "Pins.h"
+#include "SharedGlobalVariables.h"
 
 /*
 LOGLEVEL 0: Geen logs
@@ -15,15 +16,14 @@ LOGLEVEL 2: Gemiddelde
 /*
 Dummy variabelen moeten van andere software delen komen
 */
-int8_t dummyDirection = 1; // -1 achteruit, 0 stilstand, 1 vooruit
-int8_t dummyMode = 1; // 0 normaal, 1 volgmode
+//int8_t dummyDirection = 1; // -1 achteruit, 0 stilstand, 1 vooruit
+//int8_t dummyMode = 1; // 0 normaal, 1 volgmode
 bool dummyBocht = false;
 // ---------------------------------------------------------------------
 const float stopDistance = 5;
 const float followDistanceMargin = 1;
 const uint32_t updateTime_ms = 1;
 uint64_t US_millis;
-State state;
 
 #define NUM_MEASUREMENTS 10
 #define NUM_SCANPOINTS 4
@@ -108,7 +108,7 @@ ObstakelDetectie back;
 
 #if LOGLEVEL >= 1
 void printState() {
-	switch (state) {
+	switch (obstakelState) {
 	case State::FORWARD:
 		Serial.print("FORWARD");
 		break;
@@ -152,54 +152,54 @@ void loopObstakelDetectie() {
 		back.read();
 
 		US_millis = millis();
-		if (dummyMode == 0) { // normale mode
+		if (mode == Mode::NORMAAL) { // normale mode
 			front.servo.write(90);
-			switch (dummyDirection) {
-			case -1:
+			switch (direction) {
+			case Direction::BACKWARD:
 				if (back.distance() <= stopDistance) {
-					state = State::STOP;
+					obstakelState = State::STOP;
 				}
 				else {
-					state = State::BACKWARD;
+					obstakelState = State::BACKWARD;
 				}
 				break;
-			case 0:
-				state = State::STOP;
+			case Direction::STOP:
+				obstakelState = State::STOP;
 				break;
-			case 1:
+			case Direction::FORWARD:
 				if (front.distance() <= stopDistance) {
-					state = State::STOP;
+					obstakelState = State::STOP;
 				}
 				else {
-					state = State::FORWARD;
+					obstakelState = State::FORWARD;
 				}
 				break;
 			}
 		}
 
-		else if (dummyMode == 1) { // volg mode
+		else if (mode == Mode::VOLGEN) { // volg mode
 			float distance = front.distance();
-			switch (state) {
+			switch (obstakelState) {
 			case State::FORWARD:
 				// De AGV komt binnen volg afstand en moet daarvoor stoppen
 				if (distance <= stopDistance + followDistanceMargin) {
-					state = State::STOP;
+					obstakelState = State::STOP;
 				}
 
 				// AGV komt aan bij een bocht, hier moet hij eerst stoppen voordat hij kan gaan scannen
 				else if (dummyBocht) {
-					state = State::STOP;
+					obstakelState = State::STOP;
 				}
 				break;
 			case State::BACKWARD:
 				// De AGV komt binnen volg afstand en moet daarvoor stoppen
 				if (distance >= stopDistance - followDistanceMargin) {
-					state = State::STOP;
+					obstakelState = State::STOP;
 				}
 
 				// De AGV kan niet verder achteruit rijden
-				else if (back.distance() < stopDistance && dummyDirection == -1) {
-					state = State::STOP;
+				else if (back.distance() < stopDistance && direction == Direction::BACKWARD) {
+					obstakelState = State::STOP;
 				}
 				break;
 			case State::LEFT:
@@ -209,7 +209,7 @@ void loopObstakelDetectie() {
 			case State::STOP:
 				// De AGV staat bij een bocht en de volgpersoon is naar links of rechts gegaan, nu moet de AGV gaan scannen
 				if (dummyBocht && distance > 10) {
-					state = State::SCANNING;
+					obstakelState = State::SCANNING;
 					for (uint8_t i = 0; i < NUM_SCANPOINTS; i++) {
 						scanPoints[i] = 0;
 					}
@@ -222,12 +222,12 @@ void loopObstakelDetectie() {
 
 				// De AGV is te ver weg verwijderd van de volgpersoon en moet hierdoor vooruit
 				else if (distance > stopDistance + followDistanceMargin && !dummyBocht) {
-					state = State::FORWARD;
+					obstakelState = State::FORWARD;
 				}
 
 				// De AGV komt te dichtbij de volgpersoon en moet hierdoor achteruit
 				if (distance < stopDistance - followDistanceMargin) {
-					state = State::BACKWARD;
+					obstakelState = State::BACKWARD;
 				}
 				break;
 			case State::SCANNING:
@@ -242,7 +242,7 @@ void loopObstakelDetectie() {
 
 						if (scanIndex >= NUM_SCANPOINTS) {
 							// DO THE MAGIC
-							state = State::LEFT;
+							obstakelState = State::LEFT;
 							front.servo.write(90);
 							break;
 						}
