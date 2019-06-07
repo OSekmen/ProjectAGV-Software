@@ -66,10 +66,11 @@ void LoopAandrijving(uint8_t mode)
     {
     case Stop:
         StepperStopBit = true;
+        StepperMode = Stop;
         break;
 
     case Vooruit:
-        /* code */
+        StepperMode = Vooruit;
         StepperStopBit = false;
         if (/*pwm van Ömer*/ < 0)
         {
@@ -91,7 +92,7 @@ void LoopAandrijving(uint8_t mode)
         break;
 
     case Achteruit:
-        /* code */
+        StepperMode = Achteruit;
         StepperStopBit = false;
         if (/*pwm van Ömer*/ < 0)
         {
@@ -113,12 +114,12 @@ void LoopAandrijving(uint8_t mode)
         break;
 
     case Linksom:
-        /* code */
+        StepperMode = Linksom;
         StepperStopBit = false;
         break;
 
     case Rechtsom:
-        /* code */
+        StepperMode = Rechtsom;
         StepperStopBit = false;
         break;
     
@@ -130,7 +131,39 @@ void LoopAandrijving(uint8_t mode)
 
 void PositionDetermination()
 {
+    switch ()
+    {
+    case Stop:
+        // doe niks want hij staat stil.
+        break;
 
+    case Vooruit:
+        switch (expression)
+        {
+        case /* constant-expression */:
+            /* code */
+            break;
+        
+        default:
+            break;
+        }
+        break;
+
+    case Achteruit:
+        
+        break;
+
+    case Linksom:
+        
+        break;
+
+    case Rechtsom:
+        
+        break;
+    
+    default:
+        break;
+    }
 }
 
 
