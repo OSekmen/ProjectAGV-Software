@@ -36,5 +36,5 @@ void loop() {
 	//loopAandrijving();
 	loopObstakelDetectie();
 	loop_ToF_Detectie();
-	//loopNavigatie();
+	loopNavigatie();
 }
