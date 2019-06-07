@@ -73,13 +73,13 @@ void LoopAandrijving(uint8_t mode)
         StepperStopBit = false;
         if (/*pwm van Ömer*/ < 0)
         {
-            stepsToPass[StepperLinks]  = map(abs(/*pwm van Ömer*/), 0, 100, MaxFRQ + 1, 0);
+            stepsToPass[StepperLinks]  = map(abs(/*pwm van Ömer*/), 0, 100, 0, MaxFRQ + 1);
             stepsToPass[StepperRechts] = 0;
         }
         else if (/*pwm van Ömer*/ > 0)
         {
             stepsToPass[StepperLinks]  = 0;
-            stepsToPass[StepperRechts] = map(abs(/*pwm van Ömer*/), 0, 100, MaxFRQ + 1, 0);
+            stepsToPass[StepperRechts] = map(abs(/*pwm van Ömer*/), 0, 100, 0, MaxFRQ + 1);
         }
         else if (/*pwm van Ömer*/ == 0)
         {
@@ -128,10 +128,16 @@ void LoopAandrijving(uint8_t mode)
 }
 
 
+void PositionDetermination()
+{
+
+}
+
 
 #pragma endregion
 
 
+pas aan: stappen voor en achteruit
 
 
 
@@ -157,7 +163,14 @@ void StepperHandler()
 
             if (_stepperPulse[StepperLinks])
             {
-                stepsConter[StepperLinks]++;
+                if (StepperDirection[StepperLinks])
+                {
+                    stepsConter[StepperLinks]++;
+                }
+                else if (!StepperDirection[StepperLinks])
+                {
+                    stepsConter[StepperLinks]--;
+                }
             }
         }
 
@@ -168,7 +181,14 @@ void StepperHandler()
 
             if (_stepperPulse[StepperRechts])
             {
-                stepsConter[StepperRechts]++;
+                if (StepperDirection[StepperRechts])
+                {
+                    stepsConter[StepperRechts]++;
+                }
+                else if (!StepperDirection[StepperRechts])
+                {
+                    stepsConter[StepperRechts]--;
+                }
             }
         }
     }
