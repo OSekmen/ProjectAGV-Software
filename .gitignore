@@ -1,2 +1,4 @@
 projectAGV/.vs/projectAGV/v15/.suo
 projectAGV/Main/_vm/Compile.vmps.xml
+projectAGV/Main/__vm/Compile.vmps.xml
+projectAGV/Main/__vm/Configuration.Debug.vmps.xml
