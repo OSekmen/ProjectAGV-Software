@@ -222,7 +222,7 @@ void StepperHandler()
     }
 	
 
-    else if (StepperStopBit) /// wanneer de AGV stil moet staan
+    else if (StepperStopBit) // wanneer de AGV stil moet staan
     {
         // Het tellen van de klok heeft nu geen zin omdat hij niet hoeft te rijden, daarom staan ze op null
         _stepsCounter[StepperLinks]  = 0; 
