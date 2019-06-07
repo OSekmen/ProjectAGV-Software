@@ -25,8 +25,9 @@ C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\micro\Debug\Main.cpp.o: \
  C:\Users\Bas\Documents\Arduino\libraries\Ultrasonic-3.0.0\src/Ultrasonic.h \
  C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\micro\Debug\ToF_Detectie.h \
  C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\micro\Debug\Pins.h \
- C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\micro\Debug\SharedGlobalVariables.h \
+ C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\micro\Debug\GlobalVariables.h \
  C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\micro\Debug\States.h \
  C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\micro\Debug\ObstakelDetectie.h \
  C:\Users\Bas\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.23\cores\arduino/HardwareSerial.h \
+ C:\Users\Bas\AppData\Local\Temp\VMBuilds\Main\micro\Debug\Navigatie.h \
  c:\program\ files\ (x86)\microsoft\ visual\ studio\2017\community\common7\ide\extensions\1tuiup1i.zbk\Micro\ Platforms\default\debuggers\VM_DBG/VM_DBG.h

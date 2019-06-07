@@ -1,6 +1,6 @@
 #pragma once
 #include "Pins.h"
-#include "SharedGlobalVariables.h"
+#include "GlobalVariables.h"
 
 VL53L0X sensorRand_L;
 VL53L0X sensorRand_R;

@@ -119,8 +119,9 @@
     <ClInclude Include="..\..\bomenDetectie\ToF_Detectie.h" />
     <ClInclude Include="..\..\ObstakelDetectie\ObstakelDetectie.h" />
     <ClInclude Include="..\..\ObstakelDetectie\States.h" />
+    <ClInclude Include="Navigatie.h" />
     <ClInclude Include="Pins.h" />
-    <ClInclude Include="SharedGlobalVariables.h" />
+    <ClInclude Include="GlobalVariables.h" />
     <ClInclude Include="__vm\.Main.vsarduino.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -14,6 +14,7 @@
 //#include "Aandrijving.h"
 #include "ToF_Detectie.h"
 #include "ObstakelDetectie.h"
+#include "Navigatie.h"
 
 void setup() {
 	Serial.begin(9600);
@@ -21,16 +22,18 @@ void setup() {
 	//setupAandrijving();
 	setupObstakelDetectie();
 	setup_ToF_Detectie();
+	setupNavigatie();
 }
 
 void loop() {
 
-	/*switch (magic) {
-
-	}*/
+	/*
+	Hier komt de navigatie switch
+	*/
 
 
 	//loopAandrijving();
 	loopObstakelDetectie();
 	loop_ToF_Detectie();
+	//loopNavigatie();
 }

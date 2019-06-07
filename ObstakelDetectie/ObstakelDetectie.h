@@ -4,7 +4,7 @@
 #include <HardwareSerial.h>
 #include "States.h"
 #include "Pins.h"
-#include "SharedGlobalVariables.h"
+#include "GlobalVariables.h"
 
 /*
 LOGLEVEL 0: Geen logs

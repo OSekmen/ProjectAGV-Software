@@ -30,13 +30,16 @@
     <ClInclude Include="..\..\Aandrijving\Aandrijving\Aandrijving.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SharedGlobalVariables.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\bomenDetectie\ToF_Detectie.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Pins.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalVariables.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Navigatie.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
