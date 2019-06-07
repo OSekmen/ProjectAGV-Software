@@ -137,7 +137,7 @@ void TreeProssing(uint8_t mode, boolean * command) {
 }
 
 #pragma region Rand Detectie
-int leesWaarde(VL53L0X sensor) {
+int readToF(VL53L0X sensor) {
 	int waarde;
 	waarde = sensor.readRangeSingleMillimeters();
 	return waarde;
@@ -172,8 +172,8 @@ void setup_ToF_Detectie() {
 void loop_ToF_Detectie() {
 	TreeProssing(ScaneMode, &StopCommand);
 
-	int16_t distanceL = leesWaarde(sensorArray[Rand_L]);
-	int16_t distanceR = leesWaarde(sensorArray[Rand_R]);
+	int16_t distanceL = readToF(sensorArray[Rand_L]);
+	int16_t distanceR = readToF(sensorArray[Rand_R]);
 	// put your main code here, to run repeatedly:
 	
 
