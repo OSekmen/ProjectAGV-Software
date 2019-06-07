@@ -7,3 +7,5 @@ projectAGV/Main/Debug/*.hex
 projectAGV/Main/Debug/*.elf
 projectAGV/Main/Debug/*.o
 projectAGV/Main/Debug/board.buildinfo
+projectAGV/Main/Debug/VM_DBG/VM_DBG.cpp.o
+projectAGV/Main/Debug/VM_DBG/VM_mem_check_sam.cpp.o
