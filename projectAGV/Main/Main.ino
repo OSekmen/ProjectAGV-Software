@@ -25,6 +25,7 @@ void setup() {
 	setupNavigatie();
 }
 
+
 void loop() {
 
 	/*
