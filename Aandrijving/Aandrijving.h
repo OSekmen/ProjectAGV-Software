@@ -1,4 +1,11 @@
+#pragma once
 
+#include <Servo.h>
+#include <Ultrasonic.h>
+#include <HardwareSerial.h>
+#include "States.h"
+#include "Pins.h"
+#include "GlobalVariables.h"
 enum stepperMode
 {
     Stop,
@@ -40,15 +47,15 @@ void SetupAandrijving()
 
 uint32_t ClockSpeedCalculations()
 {
-    unsigned float _distanceTravel = PI * diameterWiel; // bereken de omtrek 
+    double _distanceTravel = PI * diameterWiel; // bereken de omtrek 
     uint16_t _stepResolution = 200 * microStepping; // bereken de aantal stappen per omwenteling
 
-    unsigned float _travelSteps = _stepResolution / _distanceTravel;
-    unsigned float _stepsPer2000 = _travelSteps * 2000;
+	double _travelSteps = _stepResolution / _distanceTravel;
+	double _stepsPer2000 = _travelSteps * 2000;
 
     MaxFRQ = (_stepsPer2000 * 2.0) / 10.0; // keer 2, omdat 50% aan & 50% uit
 
-    return ((1.0 / (float)MaxFRQ) * 1000000); // zet het om tot microseconden
+    return ((1.0 / (double)MaxFRQ) * 1000000); // zet het om tot microseconden
 }
 #pragma endregion
 
@@ -72,17 +79,17 @@ void LoopAandrijving(uint8_t mode)
     case Vooruit:
         StepperMode = Vooruit;
         StepperStopBit = false;
-        if (/*pwm van Ömer*/ < 0)
+        if (bijstuurWaarde < 0)
         {
-            stepsToPass[StepperLinks]  = map(abs(/*pwm van Ömer*/), 0, 100, 0, MaxFRQ + 1);
+            stepsToPass[StepperLinks]  = map(abs(bijstuurWaarde), 0, 100, 0, MaxFRQ + 1);
             stepsToPass[StepperRechts] = 0;
         }
-        else if (/*pwm van Ömer*/ > 0)
+        else if (bijstuurWaarde > 0)
         {
             stepsToPass[StepperLinks]  = 0;
-            stepsToPass[StepperRechts] = map(abs(/*pwm van Ömer*/), 0, 100, 0, MaxFRQ + 1);
+            stepsToPass[StepperRechts] = map(abs(bijstuurWaarde), 0, 100, 0, MaxFRQ + 1);
         }
-        else if (/*pwm van Ömer*/ == 0)
+        else if (bijstuurWaarde == 0)
         {
             stepsToPass[StepperLinks]  = 0;
             stepsToPass[StepperRechts] = 0;
@@ -94,17 +101,17 @@ void LoopAandrijving(uint8_t mode)
     case Achteruit:
         StepperMode = Achteruit;
         StepperStopBit = false;
-        if (/*pwm van Ömer*/ < 0)
+        if (bijstuurWaarde < 0)
         {
-            stepsToPass[StepperLinks]  = map(abs(/*pwm van Ömer*/), 0, 100, MaxFRQ + 1, 0);
+            stepsToPass[StepperLinks]  = map(abs(bijstuurWaarde), 0, 100, MaxFRQ + 1, 0);
             stepsToPass[StepperRechts] = 0;
         }
-        else if (/*pwm van Ömer*/ > 0)
+        else if (bijstuurWaarde > 0)
         {
             stepsToPass[StepperLinks]  = 0;
-            stepsToPass[StepperRechts] = map(abs(/*pwm van Ömer*/), 0, 100, MaxFRQ + 1, 0);
+            stepsToPass[StepperRechts] = map(abs(bijstuurWaarde), 0, 100, MaxFRQ + 1, 0);
         }
-        else if (/*pwm van Ömer*/ == 0)
+        else if (bijstuurWaarde == 0)
         {
             stepsToPass[StepperLinks]  = 0;
             stepsToPass[StepperRechts] = 0;
@@ -138,15 +145,7 @@ void PositionDetermination()
         break;
 
     case Vooruit:
-        switch (expression)
-        {
-        case /* constant-expression */:
-            /* code */
-            break;
-        
-        default:
-            break;
-        }
+		
         break;
 
     case Achteruit:
@@ -239,8 +238,8 @@ void StepperHandler()
         _stepperPulse[StepperRechts] = false;
     }
     
-    digitalWrite(/*hier de direction pin van StepperLinks*/, StepperDirection[StepperLinks]);
-    digitalWrite(/*hier de direction pin van StepperRechts*/, StepperDirection[StepperRechts]);
+	digitalWrite(DIRECTION_L, StepperDirection[StepperLinks]);
+	digitalWrite(DIRECTION_R, StepperDirection[StepperRechts]);
 
     digitalWrite(/*hier de pulse pin van StepperLinks*/, _stepperPulse[StepperLinks]);
     digitalWrite(/*hier de pulse pin van StepperRechts*/, _stepperPulse[StepperRechts]);
