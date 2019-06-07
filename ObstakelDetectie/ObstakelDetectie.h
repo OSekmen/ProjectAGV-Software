@@ -7,13 +7,6 @@
 #include "GlobalVariables.h"
 
 /*
-LOGLEVEL 0: Geen logs
-LOGLEVEL 1: State en afstand
-LOGLEVEL 2: Gemiddelde
-*/
-#define LOGLEVEL 1
-
-/*
 Dummy variabelen moeten van andere software delen komen
 */
 //int8_t dummyDirection = 1; // -1 achteruit, 0 stilstand, 1 vooruit
@@ -25,80 +18,12 @@ const float followDistanceMargin = 1;
 const uint32_t updateTime_ms = 1;
 uint64_t US_millis;
 
-#define NUM_MEASUREMENTS 10
 #define NUM_SCANPOINTS 4
 #define SCAN_FIELD_DEGREE 90
 #define MILLIS_PER_DEGREE (1.0 + 2.0 / 3.0)
 #define SCAN_MILLIS_MARGIN 10
 
 float scanPoints[NUM_SCANPOINTS];
-
-class ObstakelDetectie {
-private:
-	Ultrasonic us;
-	uint16_t measurements[NUM_MEASUREMENTS];
-	uint8_t index;
-
-public:
-	bool servoAttached;
-	Servo servo;
-
-public:
-	ObstakelDetectie() : us(Ultrasonic(0, 0)) {}
-
-	/*
-	Obstakel Detectie constructor
-
-	@param trig, trigger pin.
-	@param echo, echo pin.
-	@param timeOut, time out voor ultrasone sensor
-	@param servoPin, servo pin
-	*/
-	ObstakelDetectie(uint8_t trig, uint8_t echo, unsigned long timeOut = 20, uint8_t servoPin = 0) 
-		: us(Ultrasonic(trig, echo, timeOut * 1000)) {
-		index = 0;
-		uint16_t m = us.read();
-		for (uint8_t i = 0; i < NUM_MEASUREMENTS; i++) {
-			measurements[i] = m;
-		}
-
-		servoAttached = servoPin ? true : false;
-		if (servoAttached) {
-			servo.attach(servoPin);
-		}
-	}
-
-	/*
-	Leest de Ultrasone sensor uit en zet het in een array.
-
-	@return Laatste individuele meting.
-	*/
-	unsigned int read() {
-		if (index >= NUM_MEASUREMENTS) index = 0;
-		measurements[index] = us.read();
-		return measurements[index++];
-	}
-
-	/*
-	Geeft de afstand uit een NUM_MEASUREMENTS aantal metingen.
-
-	@return Gemiddelde meting.
-	*/
-	float distance() {
-		float v = 0;
-		for (uint8_t i = 0; i < NUM_MEASUREMENTS; i++) {
-			v += measurements[i];
-
-#if LOGLEVEL >= 2
-			Serial.print(measurements[i]);
-			if (i == NUM_MEASUREMENTS - 1) Serial.println();
-			else Serial.print(" ");
-#endif
-		}
-		v /= NUM_MEASUREMENTS;
-		return v;
-	}
-};
 
 #if LOGLEVEL >= 1
 void printState() {
