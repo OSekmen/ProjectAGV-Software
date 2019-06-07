@@ -1,11 +1,7 @@
 #pragma once
-
-#include <Servo.h>
-#include <Ultrasonic.h>
-#include <HardwareSerial.h>
-#include "States.h"
 #include "Pins.h"
 #include "GlobalVariables.h"
+
 enum stepperMode
 {
     Stop,
@@ -26,7 +22,7 @@ const uint16_t microStepping = 8;
 uint32_t MaxFRQ = 0;
 
 
-boolean StepperDirection[2];
+boolean StepperDirection[2] = { false, false };
 boolean StepperStopBit; /// Deze variable wordt gebruikt voor het stoppen van de AGV
 
 int32_t stepsToPass[2];
@@ -138,7 +134,7 @@ void LoopAandrijving(uint8_t mode)
 
 void PositionDetermination()
 {
-    switch ()
+    switch (StepperMode)
     {
     case Stop:
         // doe niks want hij staat stil.
@@ -169,7 +165,6 @@ void PositionDetermination()
 #pragma endregion
 
 
-pas aan: stappen voor en achteruit
 
 
 
@@ -199,10 +194,10 @@ void StepperHandler()
                 {
                     stepsConter[StepperLinks]++;
                 }
-                else if (!StepperDirection[StepperLinks])
-                {
-                    stepsConter[StepperLinks]--;
-                }
+				else if (!StepperDirection[StepperLinks])
+				{
+					stepsConter[StepperLinks]--;
+				}
             }
         }
 
@@ -241,6 +236,6 @@ void StepperHandler()
 	digitalWrite(DIRECTION_L, StepperDirection[StepperLinks]);
 	digitalWrite(DIRECTION_R, StepperDirection[StepperRechts]);
 
-    digitalWrite(/*hier de pulse pin van StepperLinks*/, _stepperPulse[StepperLinks]);
-    digitalWrite(/*hier de pulse pin van StepperRechts*/, _stepperPulse[StepperRechts]);
+    digitalWrite(PULSE_L, _stepperPulse[StepperLinks]);
+    digitalWrite(PULSE_R, _stepperPulse[StepperRechts]);
 }
