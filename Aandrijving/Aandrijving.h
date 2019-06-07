@@ -169,10 +169,6 @@ void PositionDetermination()
 #pragma endregion
 
 
-pas aan: stappen voor en achteruit
-
-
-
 
 /*----------------------------------------------------------------------------------------*/
 
