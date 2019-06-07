@@ -39,3 +39,9 @@ static int16_t bijstuurWaarde;
 static Orientation orientation;
 static float posX;
 static float posY;
+
+/*
+Globale sensoren
+*/
+static ObstakelDetectie front;
+static ObstakelDetectie back;

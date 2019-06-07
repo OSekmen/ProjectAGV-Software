@@ -100,12 +100,6 @@ public:
 	}
 };
 
-// Obstakel module voorkant
-ObstakelDetectie front;
-
-// Obstakel module achterkant
-ObstakelDetectie back;
-
 #if LOGLEVEL >= 1
 void printState() {
 	switch (obstakelState) {
