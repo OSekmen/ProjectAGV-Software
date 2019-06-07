@@ -225,6 +225,7 @@ void StepperHandler()
             }
         }
     }
+	
 
     else if (StepperStopBit) /// wanneer de AGV stil moet staan
     {
