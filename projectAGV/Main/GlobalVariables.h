@@ -26,8 +26,8 @@ enum class Direction {
 
 enum class Orientation {
 	POSITIVE_X,
-	POSITIVE_Y,
 	NEGATIVE_X,
+	POSITIVE_Y,
 	NEGATIVE_Y
 };
 
