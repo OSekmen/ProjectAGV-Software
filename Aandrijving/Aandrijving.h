@@ -24,6 +24,7 @@ uint32_t MaxFRQ = 0;
 
 boolean StepperDirection[2] = { false, false };
 boolean StepperStopBit; /// Deze variable wordt gebruikt voor het stoppen van de AGV
+boolean SteppersTurningBit;
 
 int32_t stepsToPass[2];
 uint32_t stepsConter[2];
@@ -69,12 +70,15 @@ void LoopAandrijving(uint8_t mode)
     {
     case Stop:
         StepperStopBit = true;
+		SteppersTurningBit = false;
         StepperMode = Stop;
         break;
 
     case Vooruit:
         StepperMode = Vooruit;
         StepperStopBit = false;
+		SteppersTurningBit = false;
+
         if (bijstuurWaarde < 0)
         {
             stepsToPass[StepperLinks]  = map(abs(bijstuurWaarde), 0, 100, 0, MaxFRQ + 1);
@@ -97,6 +101,8 @@ void LoopAandrijving(uint8_t mode)
     case Achteruit:
         StepperMode = Achteruit;
         StepperStopBit = false;
+		SteppersTurningBit = false;
+
         if (bijstuurWaarde < 0)
         {
             stepsToPass[StepperLinks]  = map(abs(bijstuurWaarde), 0, 100, MaxFRQ + 1, 0);
@@ -119,11 +125,13 @@ void LoopAandrijving(uint8_t mode)
     case Linksom:
         StepperMode = Linksom;
         StepperStopBit = false;
+		SteppersTurningBit = true;
         break;
 
     case Rechtsom:
         StepperMode = Rechtsom;
         StepperStopBit = false;
+		SteppersTurningBit = true;
         break;
     
     default:
@@ -134,27 +142,46 @@ void LoopAandrijving(uint8_t mode)
 
 void PositionDetermination()
 {
+	static double orientatiePunten = 0;
+
+	
+
+	switch (orientation)
+	{
+	case Orientation::POSITIVE_X:
+		break;
+	case Orientation::POSITIVE_Y:
+		break;
+	case Orientation::NEGATIVE_X:
+		break;
+	case Orientation::NEGATIVE_Y:
+		break;
+	default:
+		break;
+	}
+
+
+
     switch (StepperMode)
     {
-    case Stop:
-        // doe niks want hij staat stil.
-        break;
-
     case Vooruit:
-		
+		if (stepsConter[StepperLinks] == stepsConter[StepperRechts])
+		{
+			orientatiePunten = stepsConter[StepperLinks] * ((200.0 * microStepping) / (PI * (double)diameterWiel));
+		}
+		if (stepsConter[StepperLinks] > stepsConter[StepperRechts])
+		{
+			orientatiePunten = stepsConter[StepperRechts] * ((200.0 * microStepping) / (PI * (double)diameterWiel));
+
+		}
+
+		orientatiePunten = stepsConter[StepperLinks] * ((200.0 * microStepping) / (PI * (double)diameterWiel));
         break;
 
     case Achteruit:
         
         break;
 
-    case Linksom:
-        
-        break;
-
-    case Rechtsom:
-        
-        break;
     
     default:
         break;
@@ -190,13 +217,16 @@ void StepperHandler()
 
             if (_stepperPulse[StepperLinks])
             {
-                if (StepperDirection[StepperLinks])
-                {
-                    stepsConter[StepperLinks]++;
-                }
-				else if (!StepperDirection[StepperLinks])
+				if (!SteppersTurningBit)
 				{
-					stepsConter[StepperLinks]--;
+					if (StepperDirection[StepperLinks])
+					{
+						stepsConter[StepperLinks]++;
+					}
+					else if (!StepperDirection[StepperLinks])
+					{
+						stepsConter[StepperLinks]--;
+					}
 				}
             }
         }
@@ -208,14 +238,17 @@ void StepperHandler()
 
             if (_stepperPulse[StepperRechts])
             {
-                if (StepperDirection[StepperRechts])
-                {
-                    stepsConter[StepperRechts]++;
-                }
-                else if (!StepperDirection[StepperRechts])
-                {
-                    stepsConter[StepperRechts]--;
-                }
+				if (!SteppersTurningBit)
+				{
+					if (StepperDirection[StepperRechts])
+					{
+						stepsConter[StepperRechts]++;
+					}
+					else if (!StepperDirection[StepperRechts])
+					{
+						stepsConter[StepperRechts]--;
+					}
+				}
             }
         }
     }
@@ -239,3 +272,4 @@ void StepperHandler()
     digitalWrite(PULSE_L, _stepperPulse[StepperLinks]);
     digitalWrite(PULSE_R, _stepperPulse[StepperRechts]);
 }
+
