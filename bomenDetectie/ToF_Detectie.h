@@ -10,7 +10,7 @@ VL53L0X sensorBoom_R;
 byte ScaneMode; // welke kant moet er gescand worden
 boolean StopCommand; // commando om de AGV te stoppen 
 
-VL53L0X sensorArray[] = { sensorRand_L, sensorRand_R, sensorBoom_L, sensorBoom_R };
+VL53L0X ToFSensors[] = { sensorRand_L, sensorRand_R, sensorBoom_L, sensorBoom_R };
 const int sensorAddresses[] = { 0x30, 0x31, 0x32, 0x33 };
 const int sensorPinResetArray[] = { RESET_RAND_L, RESET_RAND_R, RESET_BOOM_L, RESET_BOOM_R };
 
@@ -27,9 +27,9 @@ long int Distance; // afstand tot hek
 
 void resetToFsensor(uint8_t sensorNumber) {
 	const  uint16_t timeOut = 10;
-	static uint16_t prev_time[sizeof sensorArray];
+	static uint16_t prev_time[sizeof ToFSensors];
 
-	static uint8_t resetProcress[sizeof sensorArray];
+	static uint8_t resetProcress[sizeof ToFSensors];
 
 	uint16_t curr_time = millis();
 	switch (resetProcress[sensorNumber]) {
@@ -63,9 +63,9 @@ void resetToFsensor(uint8_t sensorNumber) {
 			/*digitalWrite(sensorPinResetArray[sensorNumber], HIGH);
 			prev_time[sensorNumber] = curr_time;
 */
-			sensorArray[sensorNumber].init();
-			sensorArray[sensorNumber].setAddress(sensorAddresses[sensorNumber]);
-			sensorArray[sensorNumber].setTimeout(500);
+			ToFSensors[sensorNumber].init();
+			ToFSensors[sensorNumber].setAddress(sensorAddresses[sensorNumber]);
+			ToFSensors[sensorNumber].setTimeout(500);
 
 			resetProcress[sensorNumber] = 0;
 		}
@@ -87,15 +87,15 @@ void setupResetToFsensor(uint8_t sensorNumber) {
 	digitalWrite(LATCHPIN, HIGH);
 	delay(10);
 
-	sensorArray[sensorNumber].init();
-	sensorArray[sensorNumber].setAddress(sensorAddresses[sensorNumber]);
-	sensorArray[sensorNumber].setTimeout(500);
+	ToFSensors[sensorNumber].init();
+	ToFSensors[sensorNumber].setAddress(sensorAddresses[sensorNumber]);
+	ToFSensors[sensorNumber].setTimeout(500);
 }
 
 bool ScanTree(uint8_t sensorNumber) {
-	static bool reset[sizeof sensorArray];
+	static bool reset[sizeof ToFSensors];
 
-	long distance = sensorArray[sensorNumber].readRangeSingleMillimeters();
+	long distance = ToFSensors[sensorNumber].readRangeSingleMillimeters();
 
 	if (distance >= 80 && distance <= 125) {	//200/2 + 60/2 - (170/2 + 20) = afstand van sensor tot boom 
 		if (!reset[sensorNumber]) {
@@ -172,8 +172,8 @@ void setup_ToF_Detectie() {
 void loop_ToF_Detectie() {
 	TreeProssing(ScaneMode, &StopCommand);
 
-	int16_t distanceL = readToF(sensorArray[Rand_L]);
-	int16_t distanceR = readToF(sensorArray[Rand_R]);
+	int16_t distanceL = readToF(ToFSensors[Rand_L]);
+	int16_t distanceR = readToF(ToFSensors[Rand_R]);
 	// put your main code here, to run repeatedly:
 	
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "States.h"
+#include "Vector.h"
 
 /*
 LOGLEVEL 0: Geen logs
@@ -43,13 +44,14 @@ static State obstakelState;
 static Direction direction;
 
 static int16_t bijstuurWaarde;
+static bool bijBocht = false;
 
 static Orientation orientation;
-static float posX;
-static float posY;
+static Vector pos;
+static Vector target;
 
 /*
 Globale sensoren
 */
-static ObstakelDetectie* front;
-static ObstakelDetectie* back;
+static ObstakelDetectie* US_voor;
+static ObstakelDetectie* US_achter;

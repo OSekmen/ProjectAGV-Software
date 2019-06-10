@@ -19,7 +19,7 @@
 void setup() {
 	Serial.begin(9600);
 
-	//setupAandrijving();
+	//SetupAandrijving();
 	setupObstakelDetectie();
 	setup_ToF_Detectie();
 	setupNavigatie();
@@ -27,13 +27,7 @@ void setup() {
 
 
 void loop() {
-
-	/*
-	Hier komt de navigatie switch
-	*/
-
-
-	//loopAandrijving();
+	//LoopAandrijving();
 	loopObstakelDetectie();
 	loop_ToF_Detectie();
 	loopNavigatie();
