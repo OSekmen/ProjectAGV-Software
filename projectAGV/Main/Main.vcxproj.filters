@@ -27,22 +27,20 @@
     <ClInclude Include="..\..\ObstakelDetectie\States.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Aandrijving\Aandrijving\Aandrijving.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SharedGlobalVariables.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\bomenDetectie\ToF_Detectie.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Pins.h">
+    <ClInclude Include="..\..\Aandrijving\Aandrijving.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="ConflictenLijst.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
+    <ClInclude Include="..\..\Global\GlobalVariables.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Global\Pins.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Navigatie\Navigatie.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

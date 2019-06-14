@@ -23,6 +23,15 @@ In dit bestand staan welke pins gebruikt moeten worden
 
 #pragma endregion
 
+#pragma region Aandrijving
+
+#define DIRECTION_L 0
+#define PULSE_L		0
+#define DIRECTION_R 0
+#define PULSE_R		0
+
+#pragma endregion
+
 #pragma region IC control
 #define LATCHPIN 0
 #define CLOCKPIN 0
