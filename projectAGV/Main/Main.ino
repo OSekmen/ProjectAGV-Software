@@ -31,4 +31,7 @@ void loop() {
 	loopObstakelDetectie();
 	loop_ToF_Detectie();
 	loopNavigatie();
+	
+	// Test
+	US_voor->distance();
 }
