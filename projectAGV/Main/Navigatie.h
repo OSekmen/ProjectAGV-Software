@@ -4,41 +4,6 @@
 #include "ToF_Detectie.h"
 #include "ObstakelDetectie.h"
 
-/*#define DIM_X 31.2 // Overal hetzelfde
-#define DIM_Y_0 22.6
-#define DIM_Y_2 20.5
-
-#define X_COL_0 15.6
-#define X_COL_1 184.4
-#define Y_ROW_0 11.1
-#define Y_ROW_1 38.6
-#define Y_ROW_2 61.4
-#define Y_ROW_3 88.4
-
-enum BochtType {
-	L,
-	T
-};
-
-struct Bocht {
-	float x;
-	float y;
-	float sizeY;
-	BochtType type;
-};
-
-#define NUM_BOCHTEN 8
-Bocht bochten[NUM_BOCHTEN] = {
-	{X_COL_0, Y_ROW_0, DIM_Y_0, L},
-	{X_COL_1, Y_ROW_0, DIM_Y_0, L},
-	{X_COL_0, Y_ROW_1, DIM_Y_2, T},
-	{X_COL_1, Y_ROW_1, DIM_Y_2, T},
-	{X_COL_0, Y_ROW_2, DIM_Y_2, T},
-	{X_COL_1, Y_ROW_2, DIM_Y_2, T},
-	{X_COL_0, Y_ROW_3, DIM_Y_0, L},
-	{X_COL_1, Y_ROW_3, DIM_Y_0, L}
-};*/
-
 /*
 Positie van paden ligt vast
 */
@@ -46,35 +11,26 @@ float paths_horizontal_y[] = { 10.25, 36.75, 63.25, 89.75 };
 float paths_vertical_x[] = { 15.0, 185.0 };
 bool treePathScanned[] = { false, false, false };
 
-/*
-float margin = 10;
-template<class T, class R>
-bool equals(T a, R b) {
-	if (a - abs(b) <= margin) return true;
-	return false;
-}*/
-
 enum NavigationState {
 	DECICION_MAKING,
 	DRIVE_X,
-	DRIVE_Y
-
+	DRIVE_Y,
+	BOCHT
 };
 
 NavigationState navState;
-bool scanning;
-
 
 void setupNavigatie() {
 	orientation = Orientation::POSITIVE_Y;
-	pos.x = readToF(ToFSensors[Rand_L]) + 2;
-	pos.y = US_achter->distance() + 14.3;
+	pos.x = readToF_cm(ToFSensors[Rand_L]) + 2;
+	pos.y = US_rear->distance() + 14.3;
 	target = Vector(paths_vertical_x[0], paths_horizontal_y[1]);
 	navState = DECICION_MAKING;
 }
 
 void loopNavigatie() {
 	switch (navState) {
+#pragma region DECICION_MAKING
 	case DECICION_MAKING:
 		uint8_t i = 0;
 		while (!treePathScanned[i]) i++;
@@ -95,10 +51,10 @@ void loopNavigatie() {
 		case Orientation::POSITIVE_X:
 		case Orientation::NEGATIVE_X:
 			if (target.x < pos.x) {
-				direction = Direction::BACKWARD;
+				direction = Direction::BACKWARDS;
 			}
 			else {
-				direction = Direction::FORWARD;
+				direction = Direction::FORWARDS;
 			}
 			navState = DRIVE_X;
 			break;
@@ -110,26 +66,29 @@ void loopNavigatie() {
 		case Orientation::POSITIVE_Y:
 		case Orientation::NEGATIVE_Y:
 			if (target.y < pos.y) {
-				direction = Direction::BACKWARD;
+				direction = Direction::BACKWARDS;
 			}
 			else {
-				direction = Direction::FORWARD;
+				direction = Direction::FORWARDS;
 			}
 			navState = DRIVE_Y;
 			break;
 		}
 
 		break;
+#pragma endregion
+#pragma region DRIVE_X
 	case DRIVE_X:
-		if (direction == Direction::FORWARD) {
+		// TODO dit is ook orientatie afhankelijk
+		if (direction == Direction::FORWARDS) {
 			if (pos.x < target.x) {
-				// Nog niet  op target.x dus doorgaan
+				// Nog niet op target.x dus doorgaan
 				break;
 			}
 		}
-		if (direction == Direction::BACKWARD) {
+		if (direction == Direction::BACKWARDS) {
 			if (pos.x > target.x) {
-				// Nog niet  op target.x dus doorgaan
+				// Nog niet op target.x dus doorgaan
 				break;
 			}
 		}
@@ -142,18 +101,19 @@ void loopNavigatie() {
 			navState = DRIVE_Y;
 		}
 		break;
-
+#pragma endregion
+#pragma region DRIVE_Y
 	case DRIVE_Y:
 
-		if (direction == Direction::FORWARD) {
+		if (direction == Direction::FORWARDS) {
 			if (pos.y < target.y) {
-				// Nog niet  op target.y dus doorgaan
+				// Nog niet op target.y dus doorgaan
 				break;
 			}
 		}
-		if (direction == Direction::BACKWARD) {
+		if (direction == Direction::BACKWARDS) {
 			if (pos.y > target.y) {
-				// Nog niet  op target.y dus doorgaan
+				// Nog niet op target.y dus doorgaan
 				break;
 			}
 		}
@@ -166,5 +126,6 @@ void loopNavigatie() {
 			navState = DRIVE_X;
 		}
 		break;
+#pragma endregion
 	}
 }

@@ -137,10 +137,12 @@ void TreeProssing(uint8_t mode, boolean * command) {
 }
 
 #pragma region Rand Detectie
-int readToF(VL53L0X sensor) {
-	int waarde;
-	waarde = sensor.readRangeSingleMillimeters();
-	return waarde;
+int readToF_mm(VL53L0X sensor) {
+	return sensor.readRangeSingleMillimeters();
+}
+
+float readToF_cm(VL53L0X sensor) {
+	return (float)sensor.readRangeSingleMillimeters() / 10.0;
 }
 
 int stuurRichting(int long distanceL, int long distanceR) {
@@ -172,8 +174,8 @@ void setup_ToF_Detectie() {
 void loop_ToF_Detectie() {
 	TreeProssing(ScaneMode, &StopCommand);
 
-	int16_t distanceL = readToF(ToFSensors[Rand_L]);
-	int16_t distanceR = readToF(ToFSensors[Rand_R]);
+	int16_t distanceL = readToF_mm(ToFSensors[Rand_L]);
+	int16_t distanceR = readToF_mm(ToFSensors[Rand_R]);
 	// put your main code here, to run repeatedly:
 	
 

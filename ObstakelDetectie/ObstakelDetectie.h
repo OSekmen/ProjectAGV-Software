@@ -9,7 +9,7 @@
 /*
 Dummy variabelen moeten van andere software delen komen
 */
-//int8_t dummyDirection = 1; // -1 achteruit, 0 stilstand, 1 vooruit
+//int8_t dummyDirection = 1; // -1 rearuit, 0 stilstand, 1 frontuit
 //int8_t dummyMode = 1; // 0 normaal, 1 volgmode
 //bool bijBocht = false;
 // ---------------------------------------------------------------------
@@ -96,11 +96,11 @@ public:
 #if LOGLEVEL >= 1
 void printState() {
 	switch (obstakelState) {
-	case State::FORWARD:
-		Serial.print("FORWARD");
+	case State::FORWARDS:
+		Serial.print("FORWARDS");
 		break;
-	case State::BACKWARD:
-		Serial.print("BACKWARD");
+	case State::BACKWARDS:
+		Serial.print("BACKWARDS");
 		break;
 	case State::LEFT:
 		Serial.print("LEFT");
@@ -119,11 +119,11 @@ void printState() {
 #endif
 
 void setupObstakelDetectie() {
-	US_voor = new ObstakelDetectie(FRONT_TRIGGER, FRONT_ECHO, updateTime_ms, SERVO);
-	US_achter = new ObstakelDetectie(BACK_TRIGGER, BACK_ECHO, updateTime_ms);
+	US_front = new ObstakelDetectie(FRONT_TRIGGER, FRONT_ECHO, updateTime_ms, SERVO);
+	US_rear = new ObstakelDetectie(REAR_TRIGGER, REAR_ECHO, updateTime_ms);
 
 	US_millis = millis();
-	US_voor->servo.write(90);
+	US_front->servo.write(90);
 
 	pinMode(32, INPUT_PULLUP);
 }
@@ -135,57 +135,55 @@ uint16_t scanMeasureIndex;
 void loopObstakelDetectie() {
 	bijBocht = !digitalRead(32);
 	if (millis() - US_millis > updateTime_ms) {
-		US_voor->read();
-		US_achter->read();
+		US_front->read();
+		US_rear->read();
 
 		US_millis = millis();
 		if (mode == Mode::NORMAL) { // normale mode
-			US_voor->servo.write(90);
+			US_front->servo.write(90);
 			switch (direction) {
-			case Direction::BACKWARD:
-				if (US_achter->distance() <= stopDistance) {
+			case Direction::BACKWARDS:
+				if (US_rear->distance() <= stopDistance) {
 					obstakelState = State::STOP;
 				}
 				else {
-					obstakelState = State::BACKWARD;
+					obstakelState = State::BACKWARDS;
 				}
 				break;
 			case Direction::STOP:
 				obstakelState = State::STOP;
 				break;
-			case Direction::FORWARD:
-				if (US_voor->distance() <= stopDistance) {
+			case Direction::FORWARDS:
+				if (US_front->distance() <= stopDistance) {
 					obstakelState = State::STOP;
 				}
 				else {
-					obstakelState = State::FORWARD;
+					obstakelState = State::FORWARDS;
 				}
 				break;
 			}
 		}
 
 		else if (mode == Mode::FOLLOW) { // volg mode
-			float distance = US_voor->distance();
+			float distance = US_front->distance();
 			switch (obstakelState) {
-			case State::FORWARD:
+			case State::FORWARDS:
 				// De AGV komt binnen volg afstand en moet daarvoor stoppen
 				if (distance <= stopDistance + followDistanceMargin) {
 					obstakelState = State::STOP;
 				}
 
-				// AGV komt aan bij een bocht, hier moet hij eerst stoppen voordat hij kan gaan scannen
 				else if (bijBocht) {
 					obstakelState = State::STOP;
 				}
 				break;
-			case State::BACKWARD:
-				// De AGV komt binnen volg afstand en moet daarvoor stoppen
+			case State::BACKWARDS:
 				if (distance >= stopDistance - followDistanceMargin) {
 					obstakelState = State::STOP;
 				}
 
-				// De AGV kan niet verder achteruit rijden
-				else if (US_achter->distance() < stopDistance && direction == Direction::BACKWARD) {
+				// De AGV kan niet verder vooruit rijden
+				else if (US_rear->distance() < stopDistance && direction == Direction::BACKWARDS) {
 					obstakelState = State::STOP;
 				}
 				break;
@@ -203,18 +201,18 @@ void loopObstakelDetectie() {
 					scanMeasureIndex = 0;
 					scanIndex = 0;
 					float targetAngle = scanIndex * SCAN_FIELD_DEGREE / (NUM_SCANPOINTS - 1) - SCAN_FIELD_DEGREE / 2.0 + 90;
-					nextScanMillis = millis() + abs(US_voor->servo.read() - targetAngle) * MILLIS_PER_DEGREE + SCAN_MILLIS_MARGIN;
-					US_voor->servo.write(targetAngle);
+					nextScanMillis = millis() + abs(US_front->servo.read() - targetAngle) * MILLIS_PER_DEGREE + SCAN_MILLIS_MARGIN;
+					US_front->servo.write(targetAngle);
 				}
 
 				// De AGV is te ver weg verwijderd van de volgpersoon en moet hierdoor vooruit
 				else if (distance > stopDistance + followDistanceMargin && !bijBocht) {
-					obstakelState = State::FORWARD;
+					obstakelState = State::FORWARDS;
 				}
 
 				// De AGV komt te dichtbij de volgpersoon en moet hierdoor achteruit
 				if (distance < stopDistance - followDistanceMargin) {
-					obstakelState = State::BACKWARD;
+					obstakelState = State::BACKWARDS;
 				}
 				break;
 			case State::SCANNING:
@@ -230,13 +228,13 @@ void loopObstakelDetectie() {
 						if (scanIndex >= NUM_SCANPOINTS) {
 							// DO THE MAGIC
 							obstakelState = State::LEFT;
-							US_voor->servo.write(90);
+							US_front->servo.write(90);
 							break;
 						}
 						
 						float targetAngle = scanIndex * SCAN_FIELD_DEGREE / (NUM_SCANPOINTS - 1) - SCAN_FIELD_DEGREE / 2.0 + 90;
-						nextScanMillis = millis() + abs(US_voor->servo.read() - targetAngle) * MILLIS_PER_DEGREE + SCAN_MILLIS_MARGIN;
-						US_voor->servo.write(targetAngle);
+						nextScanMillis = millis() + abs(US_front->servo.read() - targetAngle) * MILLIS_PER_DEGREE + SCAN_MILLIS_MARGIN;
+						US_front->servo.write(targetAngle);
 					}
 				}
 				break;
@@ -247,7 +245,7 @@ void loopObstakelDetectie() {
 		Serial.print("State: ");
 		printState();
 		Serial.print(", Afstand: ");
-		Serial.println(US_voor->distance());
+		Serial.println(US_front->distance());
 		for (uint8_t i = 0; i < NUM_SCANPOINTS; i++) {
 			Serial.print(" ");
 			Serial.print(scanPoints[i]);

@@ -39,10 +39,10 @@
     <ClInclude Include="Navigatie.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Aandrijving\Aandrijving.h">
+    <ClInclude Include="Vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vector.h">
+    <ClInclude Include="..\..\Aandrijving\Aandrijving.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

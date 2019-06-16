@@ -19,8 +19,8 @@ enum class Mode {
 };
 
 enum class Direction {
-	FORWARD,
-	BACKWARD,
+	FORWARDS,
+	BACKWARDS,
 	STOP
 };
 
@@ -53,5 +53,5 @@ static Vector target;
 /*
 Globale sensoren
 */
-static ObstakelDetectie* US_voor;
-static ObstakelDetectie* US_achter;
+static ObstakelDetectie* US_front;
+static ObstakelDetectie* US_rear;
