@@ -19,6 +19,7 @@ enum NavigationState {
 };
 
 NavigationState navState;
+Vector marge(1, 1);
 
 void setupNavigatie() {
 	orientation = Orientation::POSITIVE_Y;
@@ -35,6 +36,8 @@ void loopNavigatie() {
 		uint8_t i = 0;
 		while (!treePathScanned[i]) i++;
 		float x, y;
+		
+		// Bepalen of de AGV links of rechts over de y-as gaat rijden
 		if (pos.x <= 100.0) {
 			x = paths_vertical_x[0];
 		}
@@ -43,35 +46,29 @@ void loopNavigatie() {
 		}
 		y = paths_horizontal_y[i + 1];
 		target = Vector(x, y);
+		Vector verschil = target - pos;
 
+		// Bepalen in welke richting de AGV eerst moet rijden
 		switch (orientation) {
 		/*
 		We staan in een horizontaal pad, dus eerst horizontaal rijden
 		*/
 		case Orientation::POSITIVE_X:
 		case Orientation::NEGATIVE_X:
-			if (target.x < pos.x) {
-				direction = Direction::BACKWARDS;
+			int8_t d = 0;
+			if (verschil.x != 0) {
+				d = -verschil.x / abs(verschil.x);
+				if (orientation == Orientation::POSITIVE_X) d *= -1;
 			}
-			else {
-				direction = Direction::FORWARDS;
-			}
+			direction = (Direction)d;
 			navState = DRIVE_X;
 			break;
-
-
 		/*
 		We staan in een verticaal pad, dus eerst verticaal rijden
 		*/
 		case Orientation::POSITIVE_Y:
 		case Orientation::NEGATIVE_Y:
-			if (target.y < pos.y) {
-				direction = Direction::BACKWARDS;
-			}
-			else {
-				direction = Direction::FORWARDS;
-			}
-			navState = DRIVE_Y;
+			// TODO Zelfde als bij x maar nu met y
 			break;
 		}
 
@@ -79,52 +76,37 @@ void loopNavigatie() {
 #pragma endregion
 #pragma region DRIVE_X
 	case DRIVE_X:
-		// TODO dit is ook orientatie afhankelijk
-		if (direction == Direction::FORWARDS) {
-			if (pos.x < target.x) {
-				// Nog niet op target.x dus doorgaan
-				break;
-			}
-		}
-		if (direction == Direction::BACKWARDS) {
-			if (pos.x > target.x) {
-				// Nog niet op target.x dus doorgaan
-				break;
-			}
-		}
+		// TODO iets naar de aandrijving waarbij de direction(globaal!) wordt mee gegeven
 
-		//TODO margin
-		if (pos == target) {
-			// Bochten maken
-		}
-		else {
-			navState = DRIVE_Y;
+		// TODO scannen voor bomen
+
+		// TODO y-coordinaat correctie
+
+		// TODO appart bepalen of de AGV bij een bocht is
+
+		// TODO pad afvinken
+
+		// De AGV komt binnen x marge van de target, de AGV is nu bij een bocht
+		if (abs(verschil.x) < marge.x) {
+
+
+			// TODO bepaal bocht richting
+			//navState = BOCHT;
 		}
 		break;
 #pragma endregion
 #pragma region DRIVE_Y
 	case DRIVE_Y:
 
-		if (direction == Direction::FORWARDS) {
-			if (pos.y < target.y) {
-				// Nog niet op target.y dus doorgaan
-				break;
-			}
-		}
-		if (direction == Direction::BACKWARDS) {
-			if (pos.y > target.y) {
-				// Nog niet op target.y dus doorgaan
-				break;
-			}
-		}
-
-		//TODO margin
-		if (pos == target) {
-			// Bochten maken
-		}
-		else {
-			navState = DRIVE_X;
-		}
+		break;
+#pragma endregion
+#pragma region BOCHT
+	case BOCHT:
+		/* TODO 
+		iets in aandrijving in de vorm 
+		bool funcName(richting)
+		waarbij return true betekent dat de bocht is gemaakt en return false dat de AGV nog bezig is met de bocht
+		*/
 		break;
 #pragma endregion
 	}

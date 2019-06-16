@@ -75,7 +75,7 @@ public:
 	/*
 	Geeft de afstand uit een NUM_MEASUREMENTS aantal metingen.
 
-	@return Gemiddelde meting.
+	@return Gemiddelde meting in cm.
 	*/
 	float distance() {
 		float v = 0;

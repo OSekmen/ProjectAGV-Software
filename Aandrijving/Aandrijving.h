@@ -57,7 +57,12 @@ uint32_t ClockSpeedCalculations()
 #pragma endregion
 
 
+void StepOriantationCalculation(double distanceTravel, uint16_t stepResolution)
+{
+	double _travel_mm = distanceTravel / stepResolution;
 
+	
+}
 
 /*----------------------------------------------------------------------------------------*/
 
