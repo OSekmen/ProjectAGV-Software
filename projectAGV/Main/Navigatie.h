@@ -62,6 +62,7 @@ enum NavigationState {
 };
 
 NavigationState navState;
+bool scanning;
 
 
 void setupNavigatie() {
