@@ -1,0 +1,5 @@
+projectAGV/projectAGV.sln
+projectAGV/Main/Main.vcxproj
+projectAGV/Main/Main.vcxproj.filters
+projectAGV/Main/__vm/Compile.vmps.xml
+projectAGV/Main/__vm/Configuration.Debug.vmps.xml
