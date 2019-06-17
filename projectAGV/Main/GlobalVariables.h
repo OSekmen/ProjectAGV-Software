@@ -8,6 +8,7 @@ LOGLEVEL 1: State en afstand
 LOGLEVEL 2: Gemiddelde
 */
 #define LOGLEVEL 1
+#define PI 3.1415926535897932384626433832795
 
 /*
 Global classes
@@ -55,3 +56,5 @@ Globale sensoren
 */
 static ObstakelDetectie* US_front;
 static ObstakelDetectie* US_rear;
+
+static double AGV_Angle_RAD = PI / 2;
