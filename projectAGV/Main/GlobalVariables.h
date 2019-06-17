@@ -33,6 +33,14 @@ enum class Orientation {
 	NEGATIVE_Y
 };
 
+enum AandrijfMode {
+	Stop,
+	Vooruit,
+	Achteruit,
+	Linksom,
+	Rechtsom
+};
+
 class ObstakelDetectie;
 //---------------------------------
 
@@ -44,6 +52,7 @@ en kunnen ook door verschillende modules worden gelezen en aangepast.
 static Mode mode = Mode::NORMAL;
 static Direction obstakelState;
 static Direction direction; // wordt alleen BACKWARDS, STOP of FORWARDS
+static AandrijfMode aandrijvingMode;
 
 static int16_t bijstuurWaarde;
 static bool bijBocht = false;
