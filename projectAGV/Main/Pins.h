@@ -15,19 +15,19 @@ In dit bestand staan welke pins gebruikt moeten worden
 #define RESET_RAND_L (1<<1)
 #define RESET_RAND_R (1<<2)
 #define RESET_BOOM_L (1<<3)
-#define RESET_BOOM_R (1<<4)
+#define RESET_BOOM_R (1<<0)
 #pragma endregion
 
 #pragma region Aandrijving
-#define DIRECTION_L 0
-#define PULSE_L		0
-#define DIRECTION_R 0
-#define PULSE_R		0
+#define DIRECTION_L A0
+#define PULSE_L		A1
+#define DIRECTION_R A2
+#define PULSE_R		A3
 #pragma endregion
 
 #pragma region IC Control
-#define LATCHPIN 0
-#define CLOCKPIN 0
-#define DATAPIN	 0
+#define LATCHPIN 14
+#define CLOCKPIN 16
+#define DATAPIN	 15
 static uint8_t IC_REG = 0;
 #pragma endregion

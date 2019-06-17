@@ -68,3 +68,23 @@ static ObstakelDetectie* US_front;
 static ObstakelDetectie* US_rear;
 
 static double AGV_Angle_RAD = -PI / 2;
+
+void printDirection(Direction dir) {
+	switch (dir) {
+	case Direction::BACKWARDS:
+		Serial.print("BACKWARDS");
+		break;
+	case Direction::STOP:
+		Serial.print("STOP");
+		break;
+	case Direction::FORWARDS:
+		Serial.print("FORWARDS");
+		break;
+	case Direction::LEFT:
+		Serial.print("LEFT");
+		break;
+	case Direction::RIGHT:
+		Serial.print("RIGHT");
+		break;
+	}
+}
