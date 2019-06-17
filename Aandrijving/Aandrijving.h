@@ -3,13 +3,8 @@
 #include "GlobalVariables.h"
 
 
-
 #define StepperLinks  0
 #define StepperRechts 1
-
-
-
-
 
 const uint16_t diameterWiel  = 75;
 const uint16_t microStepping = 8;
@@ -25,22 +20,6 @@ boolean SteppersTurningBit;
 
 int32_t stepsToPass[2];
 uint32_t stepsConter[2];
-
-
-
-/*----------------------------------------------------------------------------------------*/
-
-
-
-
-
-
-
-
-
-
-/*----------------------------------------------------------------------------------------*/
-
 
 
 void StepperHandler()
@@ -199,8 +178,6 @@ void setupAandrijving()
 	Timer1.initialize(ClockSpeedCalculations());
 	Timer1.attachInterrupt(StepperHandler); // attach the service routine here
 }
-
-/*----------------------------------------------------------------------------------------*/
 
 
 #pragma region Loop Aandrijving
