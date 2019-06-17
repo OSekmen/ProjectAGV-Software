@@ -21,8 +21,10 @@ enum class Mode {
 
 enum class Direction {
 	BACKWARDS = -1,
-	STOP = 0,
-	FORWARDS = 1
+	STOP,
+	FORWARDS,
+	LEFT,
+	RIGHT
 };
 
 enum class Orientation {
