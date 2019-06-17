@@ -2,7 +2,6 @@
 #include <Servo.h>
 #include <Ultrasonic.h>
 #include <HardwareSerial.h>
-#include "States.h"
 #include "Pins.h"
 #include "GlobalVariables.h"
 
@@ -96,24 +95,24 @@ public:
 #if LOGLEVEL >= 1
 void printState() {
 	switch (obstakelState) {
-	case State::FORWARDS:
+	case Direction::FORWARDS:
 		Serial.print("FORWARDS");
 		break;
-	case State::BACKWARDS:
+	case Direction::BACKWARDS:
 		Serial.print("BACKWARDS");
 		break;
-	case State::LEFT:
+	case Direction::LEFT:
 		Serial.print("LEFT");
 		break;
-	case State::RIGHT:
+	case Direction::RIGHT:
 		Serial.print("RIGHT");
 		break;
-	case State::STOP:
+	case Direction::STOP:
 		Serial.print("STOP");
 		break;
-	case State::SCANNING:
+	/*case State::SCANNING:
 		Serial.print("SCANNING");
-		break;
+		break;*/
 	}
 }
 #endif
@@ -144,21 +143,21 @@ void loopObstakelDetectie() {
 			switch (direction) {
 			case Direction::BACKWARDS:
 				if (US_rear->distance() <= stopDistance) {
-					obstakelState = State::STOP;
+					obstakelState = Direction::STOP;
 				}
 				else {
-					obstakelState = State::BACKWARDS;
+					obstakelState = Direction::BACKWARDS;
 				}
 				break;
 			case Direction::STOP:
-				obstakelState = State::STOP;
+				obstakelState = Direction::STOP;
 				break;
 			case Direction::FORWARDS:
 				if (US_front->distance() <= stopDistance) {
-					obstakelState = State::STOP;
+					obstakelState = Direction::STOP;
 				}
 				else {
-					obstakelState = State::FORWARDS;
+					obstakelState = Direction::FORWARDS;
 				}
 				break;
 			}
@@ -167,34 +166,34 @@ void loopObstakelDetectie() {
 		else if (mode == Mode::FOLLOW) { // volg mode
 			float distance = US_front->distance();
 			switch (obstakelState) {
-			case State::FORWARDS:
+			case Direction::FORWARDS:
 				// De AGV komt binnen volg afstand en moet daarvoor stoppen
 				if (distance <= stopDistance + followDistanceMargin) {
-					obstakelState = State::STOP;
+					obstakelState = Direction::STOP;
 				}
 
 				else if (bijBocht) {
-					obstakelState = State::STOP;
+					obstakelState = Direction::STOP;
 				}
 				break;
-			case State::BACKWARDS:
+			case Direction::BACKWARDS:
 				if (distance >= stopDistance - followDistanceMargin) {
-					obstakelState = State::STOP;
+					obstakelState = Direction::STOP;
 				}
 
 				// De AGV kan niet verder vooruit rijden
 				else if (US_rear->distance() < stopDistance && direction == Direction::BACKWARDS) {
-					obstakelState = State::STOP;
+					obstakelState = Direction::STOP;
 				}
 				break;
-			case State::LEFT:
+			case Direction::LEFT:
 				break;
-			case State::RIGHT:
+			case Direction::RIGHT:
 				break;
-			case State::STOP:
+			case Direction::STOP:
 				// De AGV staat bij een bocht en de volgpersoon is naar links of rechts gegaan, nu moet de AGV gaan scannen
 				if (bijBocht && distance > 10) {
-					obstakelState = State::SCANNING;
+					//obstakelState = State::SCANNING;
 					for (uint8_t i = 0; i < NUM_SCANPOINTS; i++) {
 						scanPoints[i] = 0;
 					}
@@ -207,15 +206,15 @@ void loopObstakelDetectie() {
 
 				// De AGV is te ver weg verwijderd van de volgpersoon en moet hierdoor vooruit
 				else if (distance > stopDistance + followDistanceMargin && !bijBocht) {
-					obstakelState = State::FORWARDS;
+					obstakelState = Direction::FORWARDS;
 				}
 
 				// De AGV komt te dichtbij de volgpersoon en moet hierdoor achteruit
 				if (distance < stopDistance - followDistanceMargin) {
-					obstakelState = State::BACKWARDS;
+					obstakelState = Direction::BACKWARDS;
 				}
 				break;
-			case State::SCANNING:
+			/*case State::SCANNING:
 				//TODO 2 soorten bochten (T- bocht van onder en T- bocht van boven)
 				if (millis() >= nextScanMillis) {
 					scanPoints[scanIndex] += distance / NUM_MEASUREMENTS;
@@ -227,7 +226,7 @@ void loopObstakelDetectie() {
 
 						if (scanIndex >= NUM_SCANPOINTS) {
 							// DO THE MAGIC
-							obstakelState = State::LEFT;
+							obstakelState = Direction::LEFT;
 							US_front->servo.write(90);
 							break;
 						}
@@ -237,7 +236,7 @@ void loopObstakelDetectie() {
 						US_front->servo.write(targetAngle);
 					}
 				}
-				break;
+				break;*/
 			}
 		}
 

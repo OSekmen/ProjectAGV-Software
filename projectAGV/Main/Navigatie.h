@@ -18,7 +18,7 @@ enum NavigationState {
 	BOCHT
 };
 
-Orientation bocht;
+Direction bocht;
 
 NavigationState navState;
 Vector marge(1, 1);
@@ -63,80 +63,6 @@ void loopNavigatie() {
 	switch (navState) {
 #pragma region PATH_CALCULATION
 	case PATH_CALCULATION:
-#pragma region oude shit
-//		uint8_t i = 0;
-//		while (!treePathScanned[i]) i++;
-//		float x, y;
-//		
-//		// Bepalen of de AGV links of rechts over de y-as gaat rijden
-//		if (pos.x <= 100.0) {
-//			x = paths_vertical_x[0];
-//		}
-//		else {
-//			x = paths_vertical_x[1];
-//		}
-//		y = paths_horizontal_y[i + 1];
-//		target = Vector(x, y);
-//		verschil = target - pos;
-//
-//		// Bepalen in welke richting de AGV eerst moet rijden
-//		switch (orientation) {
-//		/*
-//		We staan in een horizontaal pad, dus eerst horizontaal rijden
-//		*/
-//		case Orientation::POSITIVE_X:
-//		case Orientation::NEGATIVE_X:
-//			int8_t d = 0;
-//			if (verschil.x != 0) {
-//				d = -verschil.x / abs(verschil.x);
-//				if (orientation == Orientation::POSITIVE_X) d *= -1;
-//			}
-//			direction = (Direction)d;
-//			navState = DRIVE_X;
-//
-//			// TODO bepalen welke kant bomen moet scannen
-//
-//			break;
-//		/*
-//		We staan in een verticaal pad, dus eerst verticaal rijden
-//		*/
-//		case Orientation::POSITIVE_Y:
-//		case Orientation::NEGATIVE_Y:
-//			d = 0;
-//			if (verschil.y != 0) {
-//				d = -verschil.y / abs(verschil.y);
-//				if (orientation == Orientation::POSITIVE_Y) d *= -1;
-//			}
-//			direction = (Direction)d;
-//			navState = DRIVE_Y;
-//			break;
-//		}
-//#pragma endregion
-		target = getCoord();
-		verschil = target - pos;
-
-		// x coordinaat is goed
-		if (abs(verschil.x) < marge.x) {
-			navState = DRIVE_Y;
-			int8_t d = 0;
-			if (verschil.y != 0) {
-				d = -verschil.y / abs(verschil.y);
-				if (orientation == Orientation::POSITIVE_Y) d *= -1;
-			}
-			direction = (Direction)d;
-		}
-		// y coordinaat is goed
-		if (abs(verschil.y) < marge.y) {
-			navState = DRIVE_X;
-			int8_t d = 0;
-			if (verschil.x != 0) {
-				d = -verschil.x / abs(verschil.x);
-				if (orientation == Orientation::POSITIVE_X) d *= -1;
-			}
-			direction = (Direction)d;
-		}
-		break;
-#pragma endregion
 #pragma region DRIVE_X
 	case DRIVE_X:
 		// TODO iets naar de aandrijving waarbij de direction(globaal!) wordt mee gegeven
@@ -145,27 +71,35 @@ void loopNavigatie() {
 
 		// TODO scannen voor obstakels
 
-		// TODO y-coordinaat correctie
+		/// TODO y-coordinaat correctie
+		pos.y = target.y;
 
-		/// TODO bepalen of de AGV bij een bocht is (als hij op het target coordinaat is)
-
-		/// TODO pad afvinken, stoppen met scannen voor bomen
+		// TODO pad afvinken, stoppen met scannen voor bomen
 
 		// De AGV komt binnen x marge van de target, dit is ook een bocht
 		if (abs(verschil.x) < marge.x) {
 			// bocht richting bepalen
 			Vector v = getNextCoord() - pos;
 
+			// Target is hoger
 			if (v.y > 0) {
-				bocht = Orientation::POSITIVE_Y;
+				if (orientation == Orientation::POSITIVE_X) {
+					bocht = Direction::LEFT;
+				}
+				else if (orientation == Orientation::NEGATIVE_X) {
+					bocht = Direction::RIGHT;
+				}
 			}
+			// Target is lager
 			else if (v.y < 0) {
-				bocht = Orientation::NEGATIVE_Y;
+				if (orientation == Orientation::POSITIVE_X) {
+					bocht = Direction::RIGHT;
+				}
+				else if (orientation == Orientation::NEGATIVE_X) {
+					bocht = Direction::LEFT;
+				}
 			}
 			
-			/*uint8_t i = 0;
-			while (!treePathScanned[i]) i++;
-			treePathScanned[i] = true;*/
 			navState = BOCHT;
 		}
 		break;
@@ -176,9 +110,10 @@ void loopNavigatie() {
 
 		// TODO scannen voor obstakels
 
-		// TODO x-coordinaat correctie
+		/// TODO x-coordinaat correctie
+		pos.x = target.x;
 
-		// TODO bepalen of de AGV bij een bocht is
+		/// TODO bepalen of de AGV bij een bocht is
 		if (abs(verschil.y) < marge.y) {
 			// bocht richting bepalen
 			Vector v = getNextCoord() - pos;
@@ -202,11 +137,11 @@ void loopNavigatie() {
 		waarbij return true betekent dat de bocht is gemaakt en return false dat de AGV nog bezig is met de bocht
 		*/
 
-		if (funcName == true) {
+		/*if (funcName == true) {
 			orientation = bocht;
 			navState = PATH_CALCULATION;
 			queue_i++;
-		}
+		}*/
 
 		break;
 #pragma endregion

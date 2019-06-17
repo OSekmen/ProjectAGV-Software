@@ -1,5 +1,4 @@
 #pragma once
-#include "States.h"
 #include "Vector.h"
 
 /*
@@ -42,8 +41,8 @@ en kunnen ook door verschillende modules worden gelezen en aangepast.
 */
 
 static Mode mode = Mode::NORMAL;
-static State obstakelState;
-static Direction direction;
+static Direction obstakelState;
+static Direction direction; // wordt alleen BACKWARDS, STOP of FORWARDS
 
 static int16_t bijstuurWaarde;
 static bool bijBocht = false;
