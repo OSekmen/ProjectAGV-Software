@@ -10,7 +10,7 @@ VL53L0X sensorBoom_R;
 byte ScaneMode; // welke kant moet er gescand worden
 boolean StopCommand; // commando om de AGV te stoppen 
 
-VL53L0X ToFSensors[] = { sensorRand_L, sensorRand_R, sensorBoom_L, sensorBoom_R };
+VL53L0X* ToFSensors[] = { &sensorRand_L, &sensorRand_R, &sensorBoom_L, &sensorBoom_R };
 const int sensorAddresses[] = { 0x30, 0x31, 0x32, 0x33 };
 const int sensorPinResetArray[] = { RESET_RAND_L, RESET_RAND_R, RESET_BOOM_L, RESET_BOOM_R };
 
@@ -63,9 +63,9 @@ void resetToFsensor(uint8_t sensorNumber) {
 			/*digitalWrite(sensorPinResetArray[sensorNumber], HIGH);
 			prev_time[sensorNumber] = curr_time;
 */
-			ToFSensors[sensorNumber].init();
-			ToFSensors[sensorNumber].setAddress(sensorAddresses[sensorNumber]);
-			ToFSensors[sensorNumber].setTimeout(500);
+			ToFSensors[sensorNumber]->init();
+			ToFSensors[sensorNumber]->setAddress(sensorAddresses[sensorNumber]);
+			ToFSensors[sensorNumber]->setTimeout(500);
 
 			resetProcress[sensorNumber] = 0;
 		}
@@ -87,15 +87,23 @@ void setupResetToFsensor(uint8_t sensorNumber) {
 	digitalWrite(LATCHPIN, HIGH);
 	delay(10);
 
-	ToFSensors[sensorNumber].init();
-	ToFSensors[sensorNumber].setAddress(sensorAddresses[sensorNumber]);
-	ToFSensors[sensorNumber].setTimeout(500);
+	ToFSensors[sensorNumber]->init();
+	ToFSensors[sensorNumber]->setAddress(sensorAddresses[sensorNumber]);
+	ToFSensors[sensorNumber]->setTimeout(500);
+}
+
+int readToF_mm(VL53L0X* sensor) {
+	return sensor->readRangeSingleMillimeters();
+}
+
+float readToF_cm(VL53L0X* sensor) {
+	return (float)sensor->readRangeSingleMillimeters() / 10.0;
 }
 
 bool ScanTree(uint8_t sensorNumber) {
 	static bool reset[sizeof ToFSensors];
 
-	long distance = ToFSensors[sensorNumber].readRangeSingleMillimeters();
+	long distance = readToF_mm(ToFSensors[sensorNumber]);
 
 	if (distance >= 80 && distance <= 125) {	//200/2 + 60/2 - (170/2 + 20) = afstand van sensor tot boom 
 		if (!reset[sensorNumber]) {
@@ -137,25 +145,19 @@ void TreeProssing(uint8_t mode, boolean * command) {
 }
 
 #pragma region Rand Detectie
-int readToF_mm(VL53L0X sensor) {
-	return sensor.readRangeSingleMillimeters();
-}
 
-float readToF_cm(VL53L0X sensor) {
-	return (float)sensor.readRangeSingleMillimeters() / 10.0;
-}
 
 int stuurRichting(int long distanceL, int long distanceR) {
 	Distance = ((abs(75 - distanceL) + abs(75 - distanceR)) / 2);
 
 	if (distanceL < 70 && distanceR > 80) {
 		bijstuurWaarde = map(Distance, 0, 75, 0, 100);
-		Serial.println(bijstuurWaarde);
+		//Serial.println(bijstuurWaarde);
 		return bijstuurWaarde;
 	}
 	else if (distanceL > 80 && distanceR < 70) {
 		bijstuurWaarde = map(Distance, 0, 75, 0, -100);
-		Serial.println(bijstuurWaarde);
+		//Serial.println(bijstuurWaarde);
 		return bijstuurWaarde;
 	}
 	else if (distanceL > 70 && distanceL < 80) {
@@ -168,6 +170,22 @@ int stuurRichting(int long distanceL, int long distanceR) {
 
 
 void setup_ToF_Detectie() {
+	Wire.begin();
+	pinMode(LATCHPIN, OUTPUT);
+	pinMode(CLOCKPIN, OUTPUT);
+	pinMode(DATAPIN, OUTPUT);
+
+	//for (int i = 0; i <= 3; i++) { 
+	//	
+
+	//	digitalWrite(LATCHPIN, LOW);
+	//	IC_REG = IC_REG & ~sensorPinResetArray[i];
+	//	shiftOut(DATAPIN, CLOCKPIN, LSBFIRST, IC_REG);
+	//	digitalWrite(LATCHPIN, HIGH);
+	//	 }
+	
+	
+
 	for (int i = 0; i <= 3; i++) { setupResetToFsensor(i); }
 }
 

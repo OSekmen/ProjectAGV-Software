@@ -16,26 +16,6 @@
 //#include "ObstakelDetectie.h"
 #include "Navigatie.h"
 
-void printDirection() {
-	switch (direction) {
-	case Direction::BACKWARDS:
-		Serial.print("BACKWARDS");
-		break;
-	case Direction::STOP:
-		Serial.print("BACKWARDS");
-		break;
-	case Direction::FORWARDS:
-		Serial.print("BACKWARDS");
-		break;
-	case Direction::LEFT:
-		Serial.print("BACKWARDS");
-		break;
-	case Direction::RIGHT:
-		Serial.print("BACKWARDS");
-		break;
-	}
-}
-
 void setup() {
 	Serial.begin(9600);
 
@@ -45,6 +25,7 @@ void setup() {
 	setupAandrijving();
 }
 
+uint32_t nextMillis;
 
 void loop() {
 	//loopObstakelDetectie();
@@ -53,13 +34,21 @@ void loop() {
 	loopAandrijving();
 
 #if LOGLEVEL > 0
-	Serial.print("pos: ");
-	Serial.print(pos.x);
-	Serial.print(", ");
-	Serial.print(pos.y);
-	Serial.print(", target: ");
-	Serial.print(target.x);
-	Serial.print(", ");
-	Serial.println(target.y);
+	if (millis() >= nextMillis) {
+		Serial.print("pos: ");
+		Serial.print(pos.x);
+		Serial.print(", ");
+		Serial.print(pos.y);
+		Serial.print(", target: ");
+		Serial.print(target.x);
+		Serial.print(", ");
+		Serial.print(target.y);
+		Serial.print(", Direction: ");
+		printDirection(direction);
+		Serial.println();
+
+		nextMillis = millis() + 500;
+	}
+	
 #endif
 }

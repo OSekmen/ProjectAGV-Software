@@ -181,6 +181,10 @@ uint32_t ClockSpeedCalculations()
 
 void setupAandrijving()
 {
+	pinMode(DIRECTION_L, OUTPUT);
+	pinMode(PULSE_L, OUTPUT);
+	pinMode(DIRECTION_R, OUTPUT);
+	pinMode(PULSE_R, OUTPUT);
 	Timer1.initialize(ClockSpeedCalculations());
 	Timer1.attachInterrupt(StepperHandler); // attach the service routine here
 }

@@ -123,8 +123,6 @@ void setupObstakelDetectie() {
 
 	US_millis = millis();
 	US_front->servo.write(90);
-
-	pinMode(32, INPUT_PULLUP);
 }
 
 uint32_t nextScanMillis;
@@ -132,7 +130,6 @@ uint16_t scanIndex;
 uint16_t scanMeasureIndex;
 
 void loopObstakelDetectie() {
-	bijBocht = !digitalRead(32);
 	if (millis() - US_millis > updateTime_ms) {
 		US_front->read();
 		US_rear->read();
