@@ -14,13 +14,17 @@ enum stepperMode
 #define StepperLinks  0
 #define StepperRechts 1
 
-#define PI 3.1415926535897932384626433832795
+
+
 
 
 const uint16_t diameterWiel  = 75;
 const uint16_t microStepping = 8;
 uint32_t MaxFRQ = 0;
 
+const uint16_t WielBase = 126;
+double LengteStap;
+double AngleConst_RAD; /// Niet aankomen deze mag alleen gelezen worden en wordt een keer gezet!!!!
 
 boolean StepperDirection[2] = { false, false };
 boolean StepperStopBit; /// Deze variable wordt gebruikt voor het stoppen van de AGV
@@ -47,6 +51,8 @@ uint32_t ClockSpeedCalculations()
     double _distanceTravel = PI * diameterWiel; // bereken de omtrek 
     uint16_t _stepResolution = 200 * microStepping; // bereken de aantal stappen per omwenteling
 
+	StepOriantationCalculation(_distanceTravel, _stepResolution);
+
 	double _travelSteps = _stepResolution / _distanceTravel;
 	double _stepsPer2000 = _travelSteps * 2000;
 
@@ -61,7 +67,11 @@ void StepOriantationCalculation(double distanceTravel, uint16_t stepResolution)
 {
 	double _travel_mm = distanceTravel / stepResolution;
 
+	double _angleStep = (_travel_mm * 360.0) / (2.0 * PI * WielBase);
 	
+	LengteStap = 2 * (sin(DEG_TO_RAD *(_angleStep / 2)) * (WielBase / 2));
+
+	AngleConst_RAD = DEG_TO_RAD * ((180.0 - _angleStep) / 2.0);
 }
 
 /*----------------------------------------------------------------------------------------*/
@@ -71,6 +81,7 @@ void StepOriantationCalculation(double distanceTravel, uint16_t stepResolution)
 
 void LoopAandrijving(uint8_t mode)
 {
+	static boolean firstHandel[5];
     switch (mode)
     {
     case Stop:
@@ -80,6 +91,14 @@ void LoopAandrijving(uint8_t mode)
         break;
 
     case Vooruit:
+		if (!firstHandel[Vooruit])
+		{
+			AGV_Angle_RAD += PI;
+
+			firstHandel[Vooruit] = true;
+			firstHandel[Achteruit] = false;
+		}
+
         StepperMode = Vooruit;
         StepperStopBit = false;
 		SteppersTurningBit = false;
@@ -104,6 +123,15 @@ void LoopAandrijving(uint8_t mode)
         break;
 
     case Achteruit:
+
+		if (!firstHandel[Achteruit])
+		{
+			AGV_Angle_RAD -= PI;
+
+			firstHandel[Achteruit] = true;
+			firstHandel[Vooruit] = false;
+		}
+
         StepperMode = Achteruit;
         StepperStopBit = false;
 		SteppersTurningBit = false;
@@ -145,53 +173,6 @@ void LoopAandrijving(uint8_t mode)
 }
 
 
-void PositionDetermination()
-{
-	static double orientatiePunten = 0;
-
-	
-
-	switch (orientation)
-	{
-	case Orientation::POSITIVE_X:
-		break;
-	case Orientation::POSITIVE_Y:
-		break;
-	case Orientation::NEGATIVE_X:
-		break;
-	case Orientation::NEGATIVE_Y:
-		break;
-	default:
-		break;
-	}
-
-
-
-    switch (StepperMode)
-    {
-    case Vooruit:
-		if (stepsConter[StepperLinks] == stepsConter[StepperRechts])
-		{
-			orientatiePunten = stepsConter[StepperLinks] * ((200.0 * microStepping) / (PI * (double)diameterWiel));
-		}
-		if (stepsConter[StepperLinks] > stepsConter[StepperRechts])
-		{
-			orientatiePunten = stepsConter[StepperRechts] * ((200.0 * microStepping) / (PI * (double)diameterWiel));
-
-		}
-
-		orientatiePunten = stepsConter[StepperLinks] * ((200.0 * microStepping) / (PI * (double)diameterWiel));
-        break;
-
-    case Achteruit:
-        
-        break;
-
-    
-    default:
-        break;
-    }
-}
 
 
 #pragma endregion
@@ -209,19 +190,25 @@ void StepperHandler()
 {
     static uint32_t _stepsCounter[2]; // telt de counter stappen die voorbij zijn zonder de pulse pin te veranderen
     static boolean  _stepperPulse[2]; // pulse boolean
+	static boolean  _stepperChange[2];
+	static int8_t	_direction = (int)direction;
 
-    if (!StepperStopBit) /// wanneer de AGV beweegt 
-    {
-        _stepsCounter[StepperLinks]++;
-        _stepsCounter[StepperRechts]++;
+	_direction = (int)direction;
 
-        if (_stepsCounter[StepperLinks] > stepsToPass[StepperLinks]) /// Berekend alles van de linker stepper.
-        {
-            _stepperPulse[StepperLinks] = !_stepperPulse[StepperLinks];
-            _stepsCounter[StepperLinks] = 0;
+	if (!StepperStopBit) /// wanneer de AGV beweegt 
+	{
+		_stepsCounter[StepperLinks]++;
+		_stepsCounter[StepperRechts]++;
 
-            if (_stepperPulse[StepperLinks])
-            {
+		if (_stepsCounter[StepperLinks] > stepsToPass[StepperLinks]) /// Berekend alles van de linker stepper.
+		{
+			_stepperPulse[StepperLinks] = !_stepperPulse[StepperLinks];
+			_stepsCounter[StepperLinks] = 0;
+
+			if (_stepperPulse[StepperLinks])
+			{
+				_stepperChange[StepperLinks] = true;
+
 				if (!SteppersTurningBit)
 				{
 					if (StepperDirection[StepperLinks])
@@ -233,31 +220,68 @@ void StepperHandler()
 						stepsConter[StepperLinks]--;
 					}
 				}
-            }
-        }
+			}
+		}
 
-        if (_stepsCounter[StepperRechts] > stepsToPass[StepperRechts]) /// Berekend alles van de rechter stepper.
-        {
-            _stepperPulse[StepperRechts] = !_stepperPulse[StepperRechts];
-            _stepsCounter[StepperRechts] = 0;
+		if (_stepsCounter[StepperRechts] > stepsToPass[StepperRechts]) /// Berekend alles van de rechter stepper.
+		{
+			_stepperPulse[StepperRechts] = !_stepperPulse[StepperRechts];
+			_stepsCounter[StepperRechts] = 0;
 
-            if (_stepperPulse[StepperRechts])
-            {
+			if (_stepperPulse[StepperRechts])
+			{
+				_stepperChange[StepperRechts] = true;
+
 				if (!SteppersTurningBit)
 				{
 					if (StepperDirection[StepperRechts])
 					{
 						stepsConter[StepperRechts]++;
+
 					}
 					else if (!StepperDirection[StepperRechts])
 					{
 						stepsConter[StepperRechts]--;
 					}
 				}
-            }
-        }
-    }
-	
+			}
+		}
+
+		
+
+		if (!_stepperChange[StepperLinks] && !_stepperChange[StepperRechts])
+		{
+			/// er word geen stap gezet, dus de positie hoeft niet veranderd te worden.
+		}
+		else if (!_stepperChange[StepperLinks] && _stepperChange[StepperRechts])
+		{
+			AGV_Angle_RAD += AngleConst_RAD * _direction;
+
+			pos.x = pos.x + (cos(AGV_Angle_RAD) * LengteStap) * _direction;
+			pos.y = pos.y + (sin(AGV_Angle_RAD) * LengteStap) * _direction;
+
+			_stepperChange[StepperLinks] = false;
+			_stepperChange[StepperRechts] = false;
+		}
+		else if (_stepperChange[StepperLinks] && !_stepperChange[StepperRechts])
+		{
+			AGV_Angle_RAD -= AngleConst_RAD * _direction;
+
+			pos.x = pos.x + (cos(AGV_Angle_RAD) * LengteStap) * _direction;
+			pos.y = pos.y + (sin(AGV_Angle_RAD) * LengteStap) * _direction;
+
+			_stepperChange[StepperLinks] = false;
+			_stepperChange[StepperRechts] = false;
+		}
+		else if (_stepperChange[StepperLinks] && _stepperChange[StepperRechts])
+		{
+			pos.x = pos.x + (cos(AGV_Angle_RAD) * LengteStap) * _direction;
+			pos.y = pos.y + (sin(AGV_Angle_RAD) * LengteStap) * _direction;
+
+			_stepperChange[StepperLinks]  = false;
+			_stepperChange[StepperRechts] = false;
+		}
+	}
 
     else if (StepperStopBit) /// wanneer de AGV stil moet staan
     {
@@ -269,6 +293,9 @@ void StepperHandler()
         //Zodat wanneer de AGV weer moet rijden de pulsen gelijk hoog gemaakt kunnen worden. 
         _stepperPulse[StepperLinks]  = false;
         _stepperPulse[StepperRechts] = false;
+
+		_stepperChange[StepperLinks]  = false;
+		_stepperChange[StepperRechts] = false;
     }
     
 	digitalWrite(DIRECTION_L, StepperDirection[StepperLinks]);
