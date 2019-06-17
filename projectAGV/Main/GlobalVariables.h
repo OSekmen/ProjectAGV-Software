@@ -58,4 +58,4 @@ Globale sensoren
 static ObstakelDetectie* US_front;
 static ObstakelDetectie* US_rear;
 
-static double AGV_Angle_RAD = PI / 2;
+static double AGV_Angle_RAD = -PI / 2;

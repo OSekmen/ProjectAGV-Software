@@ -69,7 +69,7 @@ void StepOriantationCalculation(double distanceTravel, uint16_t stepResolution)
 
 	double _angleStep = (_travel_mm * 360.0) / (2.0 * PI * WielBase);
 	
-	LengteStap = 2 * (sin(DEG_TO_RAD *(_angleStep / 2)) * (WielBase / 2));
+	LengteStap = (2 * (sin(DEG_TO_RAD *(_angleStep / 2)) * (WielBase / 2))) * 0.1;
 
 	AngleConst_RAD = DEG_TO_RAD * ((180.0 - _angleStep) / 2.0);
 }
@@ -105,13 +105,13 @@ void LoopAandrijving(uint8_t mode)
 
         if (bijstuurWaarde < 0)
         {
-            stepsToPass[StepperLinks]  = map(abs(bijstuurWaarde), 0, 100, 0, MaxFRQ + 1);
+            stepsToPass[StepperLinks]  = map(abs(bijstuurWaarde), 0, 100, MaxFRQ, 0);
             stepsToPass[StepperRechts] = 0;
         }
         else if (bijstuurWaarde > 0)
         {
             stepsToPass[StepperLinks]  = 0;
-            stepsToPass[StepperRechts] = map(abs(bijstuurWaarde), 0, 100, 0, MaxFRQ + 1);
+            stepsToPass[StepperRechts] = map(abs(bijstuurWaarde), 0, 100, MaxFRQ, 0);
         }
         else if (bijstuurWaarde == 0)
         {

@@ -350,3 +350,5 @@ MigrationBackup/
 
 # Visual Micro
 *.vmps.xml
+projectAGV/Main/Main.vcxproj
+projectAGV/Main/Main.vcxproj.filters
