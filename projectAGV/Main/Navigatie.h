@@ -258,6 +258,13 @@ void loopNavigatie() {
 					else if (orientation == Orientation::NEGATIVE_X) {
 						bocht = Direction::RIGHT;
 					}
+
+					if (direction == Direction::FORWARDS) {
+						orientation_naBocht = Orientation::POSITIVE_Y;
+					}
+					else if (direction == Direction::BACKWARDS) {
+						orientation_naBocht = Orientation::NEGATIVE_Y;
+					}
 				}
 				// Target is lager
 				else if (v.y < 0) {
@@ -266,6 +273,13 @@ void loopNavigatie() {
 					}
 					else if (orientation == Orientation::NEGATIVE_X) {
 						bocht = Direction::LEFT;
+					}
+
+					if (direction == Direction::FORWARDS) {
+						orientation_naBocht = Orientation::NEGATIVE_Y;
+					}
+					else if (direction == Direction::BACKWARDS) {
+						orientation_naBocht = Orientation::POSITIVE_Y;
 					}
 				}
 				navState = BOCHT;
@@ -295,6 +309,13 @@ void loopNavigatie() {
 					else if (orientation == Orientation::NEGATIVE_Y) {
 						bocht = Direction::LEFT;
 					}
+
+					if (direction == Direction::FORWARDS) {
+						orientation_naBocht = Orientation::POSITIVE_X;
+					}
+					else if (direction == Direction::BACKWARDS) {
+						orientation_naBocht = Orientation::NEGATIVE_X;
+					}
 				}
 				// Target is links
 				else if (v.x < 0) {
@@ -303,6 +324,13 @@ void loopNavigatie() {
 					}
 					else if (orientation == Orientation::NEGATIVE_Y) {
 						bocht = Direction::RIGHT;
+					}
+
+					if (direction == Direction::FORWARDS) {
+						orientation_naBocht = Orientation::NEGATIVE_X;
+					}
+					else if (direction == Direction::BACKWARDS) {
+						orientation_naBocht = Orientation::POSITIVE_X;
 					}
 				}
 				navState = BOCHT;
@@ -315,7 +343,7 @@ void loopNavigatie() {
 
 			aandrijvingMode = Direction_To_AandrijfMode(bocht);
 
-			/*if (bochtGemaakt == true) {
+			if (bochtGemaakt == true) {
 				//orientation = bocht; // TODO fixen
 
 				switch (orientation) {
@@ -334,9 +362,12 @@ void loopNavigatie() {
 					else pathNumber = 5;
 				}
 
+				orientation = orientation_naBocht;
 				navState = PATH_CALCULATION;
 				queueIndex++;
-			}*/
+
+				bochtGemaakt = false;
+			}
 
 			break;
 #pragma endregion

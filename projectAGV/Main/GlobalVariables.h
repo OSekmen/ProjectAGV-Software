@@ -33,12 +33,6 @@ enum class Orientation {
 	NEGATIVE_Y
 };
 
-enum class PathType {
-	OUTSIDE_LONG,
-	OUTSIDE_SHORT,
-	INSIDE
-};
-
 enum AandrijfMode {
 	Stop,
 	Vooruit,
@@ -62,6 +56,7 @@ static AandrijfMode aandrijvingMode;
 
 static int16_t bijstuurWaarde;
 static bool bijBocht = false;
+static bool bochtGemaakt;
 
 static Orientation orientation;
 static Vector pos;

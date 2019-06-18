@@ -31,3 +31,7 @@ In dit bestand staan welke pins gebruikt moeten worden
 #define DATAPIN	 15
 static uint8_t IC_REG = 0;
 #pragma endregion
+
+#pragma region xD
+#define NOODSTOP 8
+#pragma endregion

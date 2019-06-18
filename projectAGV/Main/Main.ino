@@ -19,6 +19,8 @@
 void setup() {
 	Serial.begin(9600);
 
+	pinMode(NOODSTOP, INPUT);
+
 	//setupObstakelDetectie();
 	setup_ToF_Detectie();
 	setupNavigatie();
