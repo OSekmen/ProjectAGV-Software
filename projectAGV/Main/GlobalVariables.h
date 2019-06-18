@@ -33,6 +33,12 @@ enum class Orientation {
 	NEGATIVE_Y
 };
 
+enum class PathType {
+	OUTSIDE_LONG,
+	OUTSIDE_SHORT,
+	INSIDE
+};
+
 enum AandrijfMode {
 	Stop,
 	Vooruit,
@@ -60,6 +66,7 @@ static bool bijBocht = false;
 static Orientation orientation;
 static Vector pos;
 static Vector target;
+static uint8_t pathNumber;
 
 /*
 Globale sensoren

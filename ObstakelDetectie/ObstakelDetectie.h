@@ -13,7 +13,7 @@ Dummy variabelen moeten van andere software delen komen
 //bool bijBocht = false;
 // ---------------------------------------------------------------------
 const float stopDistance = 5;
-const float followDistanceMargin = 1;
+const float followMarge = 1;
 const uint32_t updateTime_ms = 1;
 uint64_t US_millis;
 
@@ -80,42 +80,42 @@ public:
 		float v = 0;
 		for (uint8_t i = 0; i < NUM_MEASUREMENTS; i++) {
 			v += measurements[i];
-
-#if LOGLEVEL >= 2
-			Serial.print(measurements[i]);
-			if (i == NUM_MEASUREMENTS - 1) Serial.println();
-			else Serial.print(" ");
-#endif
 		}
 		v /= NUM_MEASUREMENTS;
 		return v;
 	}
 };
 
-#if LOGLEVEL >= 1
-void printState() {
-	switch (obstakelState) {
-	case Direction::FORWARDS:
-		Serial.print("FORWARDS");
-		break;
-	case Direction::BACKWARDS:
-		Serial.print("BACKWARDS");
-		break;
-	case Direction::LEFT:
-		Serial.print("LEFT");
-		break;
-	case Direction::RIGHT:
-		Serial.print("RIGHT");
-		break;
-	case Direction::STOP:
-		Serial.print("STOP");
-		break;
-	/*case State::SCANNING:
-		Serial.print("SCANNING");
-		break;*/
+/*
+bool scanO(float dist) {
+	//TODO 2 soorten bochten (T- bocht van onder en T- bocht van boven)
+	if (millis() >= nextScanMillis) {
+		scanPoints[scanIndex] += dist / NUM_MEASUREMENTS;
+		scanMeasureIndex++;
+
+		if (scanMeasureIndex >= NUM_MEASUREMENTS) {
+			scanMeasureIndex = 0;
+			scanIndex++;
+
+			if (scanIndex >= NUM_SCANPOINTS) {
+				// DO THE MAGIC
+				obstakelState = Direction::LEFT;
+				US_front->servo.write(90);
+				break;
+			}
+
+			float targetAngle = scanIndex * SCAN_FIELD_DEGREE / (NUM_SCANPOINTS - 1) - SCAN_FIELD_DEGREE / 2.0 + 90;
+			nextScanMillis = millis() + abs(US_front->servo.read() - targetAngle) * MILLIS_PER_DEGREE + SCAN_MILLIS_MARGIN;
+			US_front->servo.write(targetAngle);
+		}
 	}
+	return false;
 }
-#endif
+
+bool scan(float d) {
+	
+	return false;
+}*/
 
 void setupObstakelDetectie() {
 	US_front = new ObstakelDetectie(FRONT_TRIGGER, FRONT_ECHO, updateTime_ms, SERVO);
@@ -160,12 +160,12 @@ void loopObstakelDetectie() {
 			}
 		}
 
-		else if (mode == Mode::FOLLOW) { // volg mode
+		else if (false) { // volg mode
 			float distance = US_front->distance();
 			switch (obstakelState) {
 			case Direction::FORWARDS:
 				// De AGV komt binnen volg afstand en moet daarvoor stoppen
-				if (distance <= stopDistance + followDistanceMargin) {
+				if (distance <= stopDistance + followMarge) {
 					obstakelState = Direction::STOP;
 				}
 
@@ -174,7 +174,7 @@ void loopObstakelDetectie() {
 				}
 				break;
 			case Direction::BACKWARDS:
-				if (distance >= stopDistance - followDistanceMargin) {
+				if (distance >= stopDistance - followMarge) {
 					obstakelState = Direction::STOP;
 				}
 
@@ -202,12 +202,12 @@ void loopObstakelDetectie() {
 				}
 
 				// De AGV is te ver weg verwijderd van de volgpersoon en moet hierdoor vooruit
-				else if (distance > stopDistance + followDistanceMargin && !bijBocht) {
+				else if (distance > stopDistance + followMarge && !bijBocht) {
 					obstakelState = Direction::FORWARDS;
 				}
 
 				// De AGV komt te dichtbij de volgpersoon en moet hierdoor achteruit
-				if (distance < stopDistance - followDistanceMargin) {
+				if (distance < stopDistance - followMarge) {
 					obstakelState = Direction::BACKWARDS;
 				}
 				break;
@@ -236,17 +236,5 @@ void loopObstakelDetectie() {
 				break;*/
 			}
 		}
-
-#if LOGLEVEL >= 1
-		Serial.print("State: ");
-		printState();
-		Serial.print(", Afstand: ");
-		Serial.println(US_front->distance());
-		for (uint8_t i = 0; i < NUM_SCANPOINTS; i++) {
-			Serial.print(" ");
-			Serial.print(scanPoints[i]);
-		}
-		Serial.println();
-#endif
 	}
 }

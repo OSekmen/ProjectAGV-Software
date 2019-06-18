@@ -7,8 +7,8 @@
 /*
 Positie van paden ligt vast
 */
-float paths_horizontal_y[] = { 10.25, 36.75, 63.25, 89.75 };
-float paths_vertical_x[] = { 15.0, 185.0 };
+const float paths_horizontal_y[] = { 10.25, 36.75, 63.25, 89.75 };
+const float paths_vertical_x[] = { 15.0, 185.0 };
 bool treePathScanned[] = { false, false, false };
 
 enum NavigationState {
@@ -31,9 +31,11 @@ NavigationState prevNavState;
 uint32_t signalEndMillis;
 
 Direction bocht;
+Orientation orientation_naBocht;
 
 NavigationState navState;
-Vector marge(1, 1);
+Vector stopVoorBocht(0, 0);
+Vector marge(0.1, 0.1);
 
 /*Vector queue[6] = {
 	{paths_vertical_x[0], paths_horizontal_y[1]},
@@ -128,11 +130,34 @@ Vector getCoord() {
 	return queue[queueIndex];
 }
 
-bool onTarget(Vector marge) {
+/*bool onTarget(Vector marge) {
 	Vector verschil = target - pos;
 	if (abs(verschil.x) < marge.x && abs(verschil.y) < marge.y) return true;
 	return false;
-}
+}*/
+
+/*
+bool bijBocht(Vector& b) {
+	Vector t;
+	if (direction == Direction::FORWARDS) {
+		switch (orientation) {
+		case Orientation::POSITIVE_X:
+			t = { paths_vertical_x[1], pos.y };
+			Vector v = t - pos;
+			break;
+		case Orientation::NEGATIVE_X:
+			t = { paths_vertical_x[0], pos.y };
+			break;
+		case Orientation::POSITIVE_Y:
+			t = {pos.x, pa}
+			break;
+		case Orientation::NEGATIVE_Y:
+			break;
+		}
+	}
+
+	return false;
+}*/
 
 AandrijfMode Direction_To_AandrijfMode(Direction dir) {
 	switch (dir) {
@@ -154,9 +179,10 @@ void setupNavigatie() {
 	orientation = Orientation::POSITIVE_Y;
 	//pos.x = readToF_cm(ToFSensors[Rand_L]) + 2;
 	//pos.y = US_rear->distance() + 14.3;
-	pos.x = 15;
-	pos.y = 0;
+	pos.x = paths_vertical_x[0];
+	pos.y = 0; // TODO meten
 	//target = Vector(paths_vertical_x[0], paths_horizontal_y[1]);
+	pathNumber = 4;
 
 	createPath(info);
 
@@ -170,8 +196,6 @@ void setupNavigatie() {
 
 	target = queue[queueIndex];
 	navState = PATH_CALCULATION;
-
-	// TODO eventueel de queue berekenen
 }
 
 void loopNavigatie() {
@@ -222,7 +246,7 @@ void loopNavigatie() {
 			// TODO pad afvinken, stoppen met scannen voor bomen
 
 			// De AGV komt binnen x marge van de target, dit is ook een bocht
-			if (abs(verschil.x) < marge.x) {
+			if (abs(verschil.x) < marge.x + stopVoorBocht.x) {
 				// bocht richting bepalen
 				Vector v = getNextCoord() - pos;
 
@@ -259,7 +283,7 @@ void loopNavigatie() {
 			pos.x = target.x;
 
 			/// TODO bepalen of de AGV bij een bocht is
-			if (abs(verschil.y) < marge.y) {
+			if (abs(verschil.y) < marge.y + stopVoorBocht.y) {
 				// bocht richting bepalen
 				Vector v = getNextCoord() - pos;
 
@@ -292,16 +316,33 @@ void loopNavigatie() {
 			aandrijvingMode = Direction_To_AandrijfMode(bocht);
 
 			/*if (bochtGemaakt == true) {
-				orientation = bocht;
+				//orientation = bocht; // TODO fixen
+
+				switch (orientation) {
+				case Orientation::POSITIVE_X:
+				case Orientation::NEGATIVE_X:
+					if (pos.y == paths_horizontal_y[0]) pathNumber = 0;
+					else if (pos.y == paths_horizontal_y[1]) pathNumber = 1;
+					else if (pos.y == paths_horizontal_y[2]) pathNumber = 2;
+					else if (pos.y == paths_horizontal_y[3]) pathNumber = 3;
+					break;
+				case Orientation::POSITIVE_Y:
+				case Orientation::NEGATIVE_Y:
+					if (pos.x < 100) {
+						pathNumber = 4;
+					}
+					else pathNumber = 5;
+				}
+
 				navState = PATH_CALCULATION;
-				queue_i++;
+				queueIndex++;
 			}*/
 
 			break;
 #pragma endregion
 #pragma region SIGNALEREN
 		case SIGNALEREN:
-			if (millis() > signalEndMillis) {
+			if (millis() >= signalEndMillis) {
 				navState = prevNavState;
 			}
 			break;
@@ -311,9 +352,23 @@ void loopNavigatie() {
 #pragma endregion
 
 #pragma region FOLLOW
-	// Magic
 	else if (mode == Mode::FOLLOW) {
-		// De AGV komt binnen volg afstand en moet daarvoor stoppen
+		float distanceFront = US_front->distance();
+		float distanceRear = US_rear->distance();
+
+		// Vooruit
+		if (distanceFront > stopDistance + followMarge) {
+			aandrijvingMode = Vooruit;
+			// if (bijbocht) scannen na afstands inval
+		}
+		// Achteruit zolang dat kan
+		else if (distanceFront < stopDistance - followMarge &&
+			distanceRear > stopDistance + followMarge) {
+			aandrijvingMode = Achteruit;
+		}
+		else {
+			aandrijvingMode = Stop;
+		}
 		
 	}
 #pragma endregion
