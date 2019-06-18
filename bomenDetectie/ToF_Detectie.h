@@ -151,12 +151,12 @@ void scanOneSide(double& bijstuurWaarde, double& distance, StuurRichting& turnSi
 	int16_t distanceScan;
 	if (!side) // links scannen
 	{
-		distanceScan = (readToF_mm(ToFSensors[Rand_L])) - 40;
+		distanceScan = (cos(AGV_Angle_RAD) * readToF_mm(ToFSensors[Rand_L])) - 40;
 	}
 
 	else if (side) // rechts scannen
 	{
-		distanceScan = (readToF_mm(ToFSensors[Rand_R])) - 40;
+		distanceScan = (cos(AGV_Angle_RAD) * readToF_mm(ToFSensors[Rand_R])) - 40;
 	}
 
 
@@ -190,7 +190,7 @@ void scanOneSide(double& bijstuurWaarde, double& distance, StuurRichting& turnSi
 			turnSide = StuurRichting::RIGHT;
 		}
 	}
-
+	
 	else // if (distanceScan == distance)
 	{
 		bijstuurWaarde = 0;
@@ -200,6 +200,9 @@ void scanOneSide(double& bijstuurWaarde, double& distance, StuurRichting& turnSi
 
 void scanTwoSides(double& bijstuurWaarde, double& distance, StuurRichting& turnSide)
 {
+	//int16_t distanceL = (cos(AGV_Angle_RAD) * readToF_mm(ToFSensors[Rand_L])) - 40;
+	//int16_t distanceR = (cos(AGV_Angle_RAD) * readToF_mm(ToFSensors[Rand_R])) - 40;
+
 	int16_t distanceL = (readToF_mm(ToFSensors[Rand_L])) - 40;
 	int16_t distanceR = (readToF_mm(ToFSensors[Rand_R])) - 40;
 

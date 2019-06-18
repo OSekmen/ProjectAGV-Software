@@ -182,7 +182,7 @@ uint32_t ClockSpeedCalculations()
 	double _travelSteps = _stepResolution / _distanceTravel;
 	double _stepsPer2000 = _travelSteps * 2000;
 
-	MaxFRQ = (_stepsPer2000 * 2.0) / 120.0; // keer 2, omdat 50% aan & 50% uit
+	MaxFRQ = (_stepsPer2000 * 2.0) / 60.0; // keer 2, omdat 50% aan & 50% uit
 
 	return ((1.0 / (double)MaxFRQ) * 1000000); // zet het om tot microseconden
 }
@@ -198,7 +198,7 @@ void setupAandrijving()
 	Timer1.initialize(ClockSpeedCalculations());
 	Timer1.attachInterrupt(StepperHandler); // attach the service routine here
 
-	MaxBijstuurFRQ = (MaxFRQ / 2) * 0.05;
+	MaxBijstuurFRQ = (MaxFRQ / 2) ;
 }
 
 
