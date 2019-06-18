@@ -35,7 +35,7 @@ Direction bocht;
 NavigationState navState;
 Vector marge(1, 1);
 
-Vector queue[6] = {
+/*Vector queue[6] = {
 	{paths_vertical_x[0], paths_horizontal_y[1]},
 	{paths_vertical_x[1], paths_horizontal_y[1]},
 	{paths_vertical_x[1], paths_horizontal_y[2]},
@@ -43,20 +43,89 @@ Vector queue[6] = {
 	{paths_vertical_x[0], paths_horizontal_y[3]},
 	{paths_vertical_x[1], paths_horizontal_y[3]}
 };
-uint8_t queue_i = 0;
+uint8_t queue_i = 0;*/
+
+Vector* queue;
+uint8_t queueSize = 0;
+uint8_t queueIndex = 0;
+
+void addToQueue(Vector v) {
+	queueSize++;
+	Vector* temp = new Vector[queueSize];
+	for (uint8_t i = 0; i < queueSize - 1; i++) {
+		temp[i] = queue[i];
+	}
+	temp[queueSize - 1] = v;
+	delete[] queue;
+	queue = temp;
+}
+
+uint8_t xi;
+/*uint8_t next_xi() {
+	/*if (xi == 0) {
+		return xi = 1;
+	}
+	else if (xi == 1) {
+		return xi = 0;
+	}*
+	return !xi;
+}*/
 
 void createPath(Info info) {
 	uint8_t treePathID = 0;
-	while (!treePathScanned[treePathID]) treePathID++;
-	Vector _target = info.pos;
+	while (treePathScanned[treePathID]) treePathID++;
+
+	if (pos.x < 100) {
+		xi = 0;
+	}
+	else {
+		xi = 1;
+	}
+
+	Vector _target = { paths_vertical_x[xi], paths_horizontal_y[treePathID + 1] };
+
+	// WARNING pos is niet exact
+	Vector qPos = pos;
+
+	// Bepalen welke richting eerst
+	switch (orientation) {
+	case Orientation::POSITIVE_X:
+	case Orientation::NEGATIVE_X:
+		qPos.x = _target.x;
+		addToQueue(qPos);
+	case Orientation::POSITIVE_Y:
+	case Orientation::NEGATIVE_Y:
+		qPos.y = _target.y;
+		addToQueue(qPos);
+		break;
+	}
+
+	uint8_t h3Counter = 0;
+	while (true) {
+		// x
+		qPos.x = paths_vertical_x[!xi];
+		addToQueue(qPos);
+
+		// De AGV is boven en klaar met alle paden, eide van de queue
+		if (qPos.y == paths_horizontal_y[3]) {
+			h3Counter++;
+			if (h3Counter >= 1) {
+				break;
+			}
+		}
+
+		// y
+		qPos.y = paths_horizontal_y[++treePathID + 1];
+		addToQueue(qPos);
+	}
 }
 
 Vector getNextCoord() {
-	return queue[queue_i + 1];
+	return queue[queueIndex + 1];
 }
 
 Vector getCoord() {
-	return queue[queue_i];
+	return queue[queueIndex];
 }
 
 bool onTarget(Vector marge) {
@@ -87,7 +156,19 @@ void setupNavigatie() {
 	//pos.y = US_rear->distance() + 14.3;
 	pos.x = 15;
 	pos.y = 0;
-	target = Vector(paths_vertical_x[0], paths_horizontal_y[1]);
+	//target = Vector(paths_vertical_x[0], paths_horizontal_y[1]);
+
+	createPath(info);
+
+	for (uint8_t p = 0; p < queueSize; p++) {
+		Serial.print("(");
+		Serial.print(queue[p].x);
+		Serial.print(", ");
+		Serial.print(queue[p].y);
+		Serial.println(")");
+	}
+
+	target = queue[queueIndex];
 	navState = PATH_CALCULATION;
 
 	// TODO eventueel de queue berekenen
