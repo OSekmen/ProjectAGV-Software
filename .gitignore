@@ -353,3 +353,4 @@ MigrationBackup/
 projectAGV/Main/Main.vcxproj
 projectAGV/Main/Main.vcxproj.filters
 projectAGV/projectAGV.sln
+projectAGV/Main/__vm/.Main.vsarduino.h

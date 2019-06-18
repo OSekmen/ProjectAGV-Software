@@ -21,8 +21,9 @@ enum sensorName {
 	Boom_R = 3
 } SensorName;
 
-long int Distance; // afstand tot hek
+long Distance; // afstand tot hek
 //int pwm; vervangen door bijstuurWaarde
+
 
 
 void resetToFsensor(uint8_t sensorNumber) {
@@ -147,23 +148,37 @@ void TreeProssing(uint8_t mode, boolean * command) {
 #pragma region Rand Detectie
 
 
-int stuurRichting(int long distanceL, int long distanceR) {
-	Distance = ((abs(75 - distanceL) + abs(75 - distanceR)) / 2);
+void stuurRichting(int long distanceL, int long distanceR) {
+	uint16_t _distanceL = (distanceL - 40);
+	uint16_t _distanceR = (distanceR - 40);
+	Distance = (_distanceL + _distanceR) / 2;
 
-	if (distanceL < 70 && distanceR > 80) {
-		bijstuurWaarde = map(Distance, 0, 75, 0, 100);
-		//Serial.println(bijstuurWaarde);
-		return bijstuurWaarde;
+
+	
+
+	if (_distanceL < Distance && _distanceR > Distance)
+	{
+		bijstuurWaarde = -map_double(_distanceL, Distance, 0, 0, 100);
 	}
-	else if (distanceL > 80 && distanceR < 70) {
-		bijstuurWaarde = map(Distance, 0, 75, 0, -100);
-		//Serial.println(bijstuurWaarde);
-		return bijstuurWaarde;
+
+	else if (_distanceL > Distance && _distanceR < Distance)
+	{
+		bijstuurWaarde = map_double(_distanceR, Distance, 0, 0, 100);
 	}
-	else if (distanceL > 70 && distanceL < 80) {
+
+	else if (_distanceL == Distance)
+	{
 		bijstuurWaarde = 0;
-		return bijstuurWaarde;
 	}
+
+	/*Serial.print("Links: ");
+	Serial.print(_distanceL);
+	Serial.print("  Rechts:  ");
+	Serial.print(_distanceR);
+	Serial.print("  Afstand:  ");
+	Serial.print(Distance);
+	Serial.print("  De waarde is ");
+	Serial.println(bijstuurWaarde);*/
 }
 #pragma endregion
 
@@ -191,6 +206,8 @@ void setup_ToF_Detectie() {
 
 void loop_ToF_Detectie() {
 	TreeProssing(ScaneMode, &StopCommand);
+
+
 
 	int16_t distanceL = readToF_mm(ToFSensors[Rand_L]);
 	int16_t distanceR = readToF_mm(ToFSensors[Rand_R]);

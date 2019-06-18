@@ -212,13 +212,13 @@ void loopAandrijving()
 
 		if (bijstuurWaarde < 0)
 		{
-			stepsToPass[StepperLinks] = map(abs(bijstuurWaarde), 0, 100, MaxFRQ + 1, 0);
-			stepsToPass[StepperRechts] = 0;
+			stepsToPass[StepperLinks] = 0;
+			stepsToPass[StepperRechts] = map_double(abs(bijstuurWaarde), 0, 100, 0, MaxFRQ);
 		}
 		else if (bijstuurWaarde > 0)
 		{
-			stepsToPass[StepperLinks] = 0;
-			stepsToPass[StepperRechts] = map(abs(bijstuurWaarde), 0, 100, MaxFRQ + 1, 0);
+			stepsToPass[StepperLinks] = map_double(abs(bijstuurWaarde), 0, 100, 0, MaxFRQ);
+			stepsToPass[StepperRechts] = 0;
 		}
 		else if (bijstuurWaarde == 0)
 		{
