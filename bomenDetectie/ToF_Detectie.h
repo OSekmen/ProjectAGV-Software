@@ -146,31 +146,155 @@ void TreeProssing(uint8_t mode, boolean * command) {
 }
 
 #pragma region Rand Detectie
-
-
-void stuurRichting(int long distanceL, int long distanceR) {
-	uint16_t _distanceL = (distanceL - 40);
-	uint16_t _distanceR = (distanceR - 40);
-	Distance = (_distanceL + _distanceR) / 2;
-
-
-	
-
-	if (_distanceL < Distance && _distanceR > Distance)
+void scanOneSide(double& bijstuurWaarde, double& distance, StuurRichting& turnSide, boolean side, uint16_t space)
+{
+	int16_t distanceScan;
+	if (!side) // links scannen
 	{
-		bijstuurWaarde = -map_double(_distanceL, Distance, 0, 0, 100);
+		distanceScan = (readToF_mm(ToFSensors[Rand_L])) - 40;
 	}
 
-	else if (_distanceL > Distance && _distanceR < Distance)
+	else if (side) // rechts scannen
 	{
-		bijstuurWaarde = map_double(_distanceR, Distance, 0, 0, 100);
+		distanceScan = (readToF_mm(ToFSensors[Rand_R])) - 40;
 	}
 
-	else if (_distanceL == Distance)
+
+	distance = space;
+
+	if (distanceScan < distance)
+	{
+		bijstuurWaarde = distanceScan;
+		
+		if (!side)
+		{
+			turnSide = StuurRichting::RIGHT;
+		}
+		else if (side)
+		{
+			turnSide = StuurRichting::LEFT;
+		}
+		
+	}
+
+	else if (distanceScan > distance)
+	{
+		bijstuurWaarde = distanceScan; 
+		
+		if (!side)
+		{
+			turnSide = StuurRichting::LEFT;
+		}
+		else if (side)
+		{
+			turnSide = StuurRichting::RIGHT;
+		}
+	}
+
+	else if (distanceScan == distance)
 	{
 		bijstuurWaarde = 0;
+		turnSide = StuurRichting::STADY;
+	}
+}
+
+void scanTwoSides(double& bijstuurWaarde, double& distance, StuurRichting& turnSide)
+{
+	int16_t distanceL = (readToF_mm(ToFSensors[Rand_L])) - 40;
+	int16_t distanceR = (readToF_mm(ToFSensors[Rand_R])) - 40;
+
+	distance = (distanceL + distanceR) / 2;
+
+	if (distanceL < distance && distanceR > distance)
+	{
+		bijstuurWaarde = distanceL;
+		turnSide = StuurRichting::RIGHT;
 	}
 
+	else if (distanceL > distance && distanceR < distance)
+	{
+		bijstuurWaarde = distanceR;
+		turnSide = StuurRichting::LEFT;
+	}
+
+	else if (distanceL == distance)
+	{
+		bijstuurWaarde = 0;
+		turnSide = StuurRichting::STADY;
+	}
+}
+
+void stuurRichting(double& bijstuurWaarde, double& distance, StuurRichting& turnSide)
+{
+	static enum class Side
+	{
+		left,
+		right
+	};
+	const uint16_t path_0_3 = 100;
+	const uint16_t path_4_5 = 150;
+
+	switch (pathNumber)
+	{
+	case 0:
+		switch (orientation)
+		{
+		case Orientation::POSITIVE_X:
+			scanOneSide(bijstuurWaarde, distance, turnSide, (boolean)Side::left, path_0_3);
+			break;
+		case Orientation::NEGATIVE_X:
+			scanOneSide(bijstuurWaarde, distance, turnSide, (boolean)Side::right, path_0_3);
+			break;
+		default:
+			break;
+		}
+		break;
+	case 1:
+	case 2:
+		scanTwoSides(bijstuurWaarde, distance, turnSide);
+		break;
+	case 3:
+		switch (orientation)
+		{
+		case Orientation::POSITIVE_X:
+			scanOneSide(bijstuurWaarde, distance, turnSide, (boolean)Side::right, path_0_3);
+			break;
+		case Orientation::NEGATIVE_X:
+			scanOneSide(bijstuurWaarde, distance, turnSide, (boolean)Side::left, path_0_3);
+			break;
+		default:
+			break;
+		}
+		break;
+	case 4:
+		switch (orientation)
+		{
+		case Orientation::POSITIVE_Y:
+			scanOneSide(bijstuurWaarde, distance, turnSide, (boolean)Side::right, path_4_5);
+			break;
+		case Orientation::NEGATIVE_Y:
+			scanOneSide(bijstuurWaarde, distance, turnSide, (boolean)Side::left, path_4_5);
+			break;
+		default:
+			break;
+		}
+		break;
+	case 5:
+		switch (orientation)
+		{
+		case Orientation::POSITIVE_Y:
+			scanOneSide(bijstuurWaarde, distance, turnSide, (boolean)Side::left, path_4_5);
+			break;
+		case Orientation::NEGATIVE_Y:
+			scanOneSide(bijstuurWaarde, distance, turnSide, (boolean)Side::right, path_4_5);
+			break;
+		default:
+			break;
+		}
+		break;
+	default:
+		break;
+	}
 	/*Serial.print("Links: ");
 	Serial.print(_distanceL);
 	Serial.print("  Rechts:  ");
@@ -209,10 +333,9 @@ void loop_ToF_Detectie() {
 
 
 
-	int16_t distanceL = readToF_mm(ToFSensors[Rand_L]);
-	int16_t distanceR = readToF_mm(ToFSensors[Rand_R]);
+
 	// put your main code here, to run repeatedly:
 	
 
-	stuurRichting(distanceL, distanceR);
+	//stuurRichting(distanceL, distanceR);
 }

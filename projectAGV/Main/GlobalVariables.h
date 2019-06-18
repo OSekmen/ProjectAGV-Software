@@ -46,6 +46,12 @@ enum AandrijfMode {
 	Rechtsom
 };
 
+enum class StuurRichting {
+	STADY,
+	LEFT,
+	RIGHT
+};
+
 class ObstakelDetectie;
 //---------------------------------
 
@@ -59,7 +65,7 @@ static Direction obstakelState;
 static Direction direction; // wordt alleen BACKWARDS, STOP of FORWARDS
 static AandrijfMode aandrijvingMode;
 
-static int16_t bijstuurWaarde;
+//static int16_t bijstuurWaarde;
 static bool bijBocht = false;
 
 static Orientation orientation;
