@@ -19,10 +19,10 @@ In dit bestand staan welke pins gebruikt moeten worden
 #pragma endregion
 
 #pragma region Aandrijving
-#define DIRECTION_L A0
-#define PULSE_L		A1
-#define DIRECTION_R A2
-#define PULSE_R		A3
+#define DIRECTION_L A2
+#define PULSE_L		A3
+#define DIRECTION_R A0
+#define PULSE_R		A1
 #pragma endregion
 
 #pragma region IC Control

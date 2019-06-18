@@ -182,7 +182,7 @@ void setupNavigatie() {
 	pos.x = paths_vertical_x[0];
 	pos.y = 0; // TODO meten
 	//target = Vector(paths_vertical_x[0], paths_horizontal_y[1]);
-	pathNumber = 4;
+	pathNumber = 1;
 
 	createPath(info);
 
@@ -193,6 +193,9 @@ void setupNavigatie() {
 		Serial.print(queue[p].y);
 		Serial.println(")");
 	}
+
+	//TODO remove
+	queue[0].y = 40000000;
 
 	target = queue[queueIndex];
 	navState = PATH_CALCULATION;

@@ -10,6 +10,7 @@
 const uint16_t diameterWiel  = 75;
 const uint16_t microStepping = 8;
 uint32_t MaxFRQ = 0;
+uint32_t MaxBijstuurFRQ;
 
 const uint16_t WielBase = 126;
 double LengteStap;
@@ -118,6 +119,18 @@ void StepperHandler()
 			_stepperChange[StepperLinks] = false;
 			_stepperChange[StepperRechts] = false;
 		}
+		else
+		{ }
+		if (AGV_Angle_RAD >= 2 * PI)
+		{
+			AGV_Angle_RAD -= (2 * PI);
+		}
+		if (AGV_Angle_RAD <= -2 * PI)
+		{
+			AGV_Angle_RAD += (2 * PI);
+		}
+		//Serial.print("Angle: ");
+		//Serial.println(AGV_Angle_RAD);
 	}
 
 	else if (StepperStopBit) /// wanneer de AGV stil moet staan
@@ -154,7 +167,9 @@ void StepOriantationCalculation(double distanceTravel, uint16_t stepResolution)
 
 	LengteStap = (2 * (sin(DEG_TO_RAD *(_angleStep / 2)) * (WielBase / 2))) * 0.1;
 
-	AngleConst_RAD = DEG_TO_RAD * ((180.0 - _angleStep) / 2.0);
+	AngleConst_RAD = DEG_TO_RAD * (((180.0 - _angleStep) / 2.0) - 90);
+
+	//Serial.println(AngleConst_RAD, 5);
 }
 
 uint32_t ClockSpeedCalculations()
@@ -167,7 +182,7 @@ uint32_t ClockSpeedCalculations()
 	double _travelSteps = _stepResolution / _distanceTravel;
 	double _stepsPer2000 = _travelSteps * 2000;
 
-	MaxFRQ = (_stepsPer2000 * 2.0) / 10.0; // keer 2, omdat 50% aan & 50% uit
+	MaxFRQ = (_stepsPer2000 * 2.0) / 120.0; // keer 2, omdat 50% aan & 50% uit
 
 	return ((1.0 / (double)MaxFRQ) * 1000000); // zet het om tot microseconden
 }
@@ -182,6 +197,8 @@ void setupAandrijving()
 	pinMode(PULSE_R, OUTPUT);
 	Timer1.initialize(ClockSpeedCalculations());
 	Timer1.attachInterrupt(StepperHandler); // attach the service routine here
+
+	MaxBijstuurFRQ = (MaxFRQ / 2) * 0.05;
 }
 
 
@@ -223,12 +240,12 @@ void loopAandrijving()
 			stepsToPass[StepperRechts] = 0;
 			break;
 		case StuurRichting::LEFT:
-			stepsToPass[StepperLinks] = map_double(_bijstuurWaarde, _distance, 0, 0, MaxFRQ);
+			stepsToPass[StepperLinks] = map_double(_bijstuurWaarde, _distance, 0, 0, MaxBijstuurFRQ);
 			stepsToPass[StepperRechts] = 0;
 			break;
 		case StuurRichting::RIGHT:
 			stepsToPass[StepperLinks] = 0;
-			stepsToPass[StepperRechts] = map_double(_bijstuurWaarde, _distance, 0, 0, MaxFRQ);
+			stepsToPass[StepperRechts] = map_double(_bijstuurWaarde, _distance, 0, 0, MaxBijstuurFRQ);
 			break;
 		default:
 			break;
@@ -257,12 +274,12 @@ void loopAandrijving()
 			stepsToPass[StepperRechts] = 0;
 			break;
 		case StuurRichting::LEFT:
-			stepsToPass[StepperLinks] = map_double(_bijstuurWaarde, _distance, 0, 0, MaxFRQ);
+			stepsToPass[StepperLinks] = map_double(_bijstuurWaarde, _distance, 0, 0, MaxBijstuurFRQ);
 			stepsToPass[StepperRechts] = 0;
 			break;
 		case StuurRichting::RIGHT:
 			stepsToPass[StepperLinks] = 0;
-			stepsToPass[StepperRechts] = map_double(_bijstuurWaarde, _distance, 0, 0, MaxFRQ);
+			stepsToPass[StepperRechts] = map_double(_bijstuurWaarde, _distance, 0, 0, MaxBijstuurFRQ);
 			break;
 		default:
 			break;

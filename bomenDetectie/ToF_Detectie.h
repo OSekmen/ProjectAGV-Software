@@ -179,7 +179,7 @@ void scanOneSide(double& bijstuurWaarde, double& distance, StuurRichting& turnSi
 
 	else if (distanceScan > distance)
 	{
-		bijstuurWaarde = distanceScan; 
+		bijstuurWaarde = 2 * distance - distanceScan;
 		
 		if (!side)
 		{
@@ -191,7 +191,7 @@ void scanOneSide(double& bijstuurWaarde, double& distance, StuurRichting& turnSi
 		}
 	}
 
-	else if (distanceScan == distance)
+	else // if (distanceScan == distance)
 	{
 		bijstuurWaarde = 0;
 		turnSide = StuurRichting::STADY;
@@ -232,7 +232,7 @@ void stuurRichting(double& bijstuurWaarde, double& distance, StuurRichting& turn
 		right
 	};
 	const uint16_t path_0_3 = 100;
-	const uint16_t path_4_5 = 150;
+	const uint16_t path_4_5 = 150 - 85 + 22.5;
 
 	switch (pathNumber)
 	{

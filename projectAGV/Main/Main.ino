@@ -34,22 +34,24 @@ void loop() {
 	loop_ToF_Detectie();
 	loopNavigatie();
 	loopAandrijving();
+
+#if LOGLEVEL > 0
+	if (millis() >= nextMillis) {
+		Serial.print("pos: ");
+		Serial.print(pos.x);
+		Serial.print(", ");
+		Serial.print(pos.y);
+		Serial.print(", Angle: ");
+		Serial.print(AGV_Angle_RAD);
+		Serial.print(", target: ");
+		Serial.print(target.x);
+		Serial.print(", ");
+		Serial.print(target.y);
+		Serial.print(", Direction: ");
+		printDirection(direction);
+		Serial.println();
+
+		nextMillis = millis() + 500;
+	}
+#endif
 }
-//#if LOGLEVEL > 0
-//	if (millis() >= nextMillis) {
-//		Serial.print("pos: ");
-//		Serial.print(pos.x);
-//		Serial.print(", ");
-//		Serial.print(pos.y);
-//		Serial.print(", target: ");
-//		Serial.print(target.x);
-//		Serial.print(", ");
-//		Serial.print(target.y);
-//		Serial.print(", Direction: ");
-//		printDirection(direction);
-//		Serial.println();
-//
-//		nextMillis = millis() + 500;
-//	}
-//	
-//#endif
