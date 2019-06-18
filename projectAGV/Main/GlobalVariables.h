@@ -13,6 +13,11 @@ LOGLEVEL 2: Gemiddelde
 Global classes
 */
 
+static double map_double(double x, double in_min, double in_max, double out_min, double out_max)
+{
+	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 enum class Mode {
 	NORMAL,
 	FOLLOW
@@ -41,6 +46,12 @@ enum AandrijfMode {
 	Rechtsom
 };
 
+enum class StuurRichting {
+	STADY,
+	LEFT,
+	RIGHT
+};
+
 class ObstakelDetectie;
 //---------------------------------
 
@@ -54,7 +65,7 @@ static Direction obstakelState;
 static Direction direction; // wordt alleen BACKWARDS, STOP of FORWARDS
 static AandrijfMode aandrijvingMode;
 
-static int16_t bijstuurWaarde;
+//static int16_t bijstuurWaarde;
 static bool bijBocht = false;
 static bool bochtGemaakt;
 

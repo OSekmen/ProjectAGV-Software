@@ -189,6 +189,11 @@ void setupAandrijving()
 void loopAandrijving()
 {
 	static boolean firstHandel[5];
+	
+	double _bijstuurWaarde;
+	double _distance;
+	StuurRichting _stuurRichting;
+
 	switch (aandrijvingMode)
 	{
 	case Stop:
@@ -198,65 +203,68 @@ void loopAandrijving()
 		break;
 
 	case Vooruit:
+		
 		if (!firstHandel[Vooruit])
 		{
 			AGV_Angle_RAD += PI;
 
 			firstHandel[Vooruit] = true;
 			firstHandel[Achteruit] = false;
-		}
 
-		//StepperMode = Vooruit;
-		StepperStopBit = false;
-		SteppersTurningBit = false;
-
-		if (bijstuurWaarde < 0)
-		{
-			stepsToPass[StepperLinks] = map(abs(bijstuurWaarde), 0, 100, MaxFRQ + 1, 0);
-			stepsToPass[StepperRechts] = 0;
+			StepperStopBit = false;
+			SteppersTurningBit = false;
 		}
-		else if (bijstuurWaarde > 0)
+		stuurRichting(_bijstuurWaarde, _distance, _stuurRichting);
+		switch (_stuurRichting)
 		{
-			stepsToPass[StepperLinks] = 0;
-			stepsToPass[StepperRechts] = map(abs(bijstuurWaarde), 0, 100, MaxFRQ + 1, 0);
-		}
-		else if (bijstuurWaarde == 0)
-		{
+		case StuurRichting::STADY:
 			stepsToPass[StepperLinks] = 0;
 			stepsToPass[StepperRechts] = 0;
+			break;
+		case StuurRichting::LEFT:
+			stepsToPass[StepperLinks] = map_double(_bijstuurWaarde, _distance, 0, 0, MaxFRQ);
+			stepsToPass[StepperRechts] = 0;
+			break;
+		case StuurRichting::RIGHT:
+			stepsToPass[StepperLinks] = 0;
+			stepsToPass[StepperRechts] = map_double(_bijstuurWaarde, _distance, 0, 0, MaxFRQ);
+			break;
+		default:
+			break;
 		}
 		StepperDirection[StepperLinks] = 1;
 		StepperDirection[StepperRechts] = 1;
 		break;
 
 	case Achteruit:
-
 		if (!firstHandel[Achteruit])
 		{
 			AGV_Angle_RAD -= PI;
 
 			firstHandel[Achteruit] = true;
 			firstHandel[Vooruit] = false;
-		}
 
-		//StepperMode = Achteruit;
-		StepperStopBit = false;
-		SteppersTurningBit = false;
+			StepperStopBit = false;
+			SteppersTurningBit = false;
+		}
+		stuurRichting(_bijstuurWaarde, _distance, _stuurRichting);
 
-		if (bijstuurWaarde < 0)
+		switch (_stuurRichting)
 		{
-			stepsToPass[StepperLinks] = map(abs(bijstuurWaarde), 0, 100, MaxFRQ + 1, 0);
-			stepsToPass[StepperRechts] = 0;
-		}
-		else if (bijstuurWaarde > 0)
-		{
-			stepsToPass[StepperLinks] = 0;
-			stepsToPass[StepperRechts] = map(abs(bijstuurWaarde), 0, 100, MaxFRQ + 1, 0);
-		}
-		else if (bijstuurWaarde == 0)
-		{
+		case StuurRichting::STADY:
 			stepsToPass[StepperLinks] = 0;
 			stepsToPass[StepperRechts] = 0;
+			break;
+		case StuurRichting::LEFT:
+			stepsToPass[StepperLinks] = map_double(_bijstuurWaarde, _distance, 0, 0, MaxFRQ);
+			stepsToPass[StepperRechts] = 0;
+			break;
+		case StuurRichting::RIGHT:
+			stepsToPass[StepperLinks] = 0;
+			stepsToPass[StepperRechts] = map_double(_bijstuurWaarde, _distance, 0, 0, MaxFRQ);
+			break;
+		default:
+			break;
 		}
 		StepperDirection[StepperLinks] = 0;
 		StepperDirection[StepperRechts] = 0;
