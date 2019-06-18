@@ -1,6 +1,7 @@
 #pragma once
 #include "Pins.h"
 #include "GlobalVariables.h"
+#include "ToF_Detectie.h"
 
 
 #define StepperLinks  0

@@ -226,7 +226,7 @@ void scanTwoSides(double& bijstuurWaarde, double& distance, StuurRichting& turnS
 
 void stuurRichting(double& bijstuurWaarde, double& distance, StuurRichting& turnSide)
 {
-	static enum class Side
+	enum class Side
 	{
 		left,
 		right
