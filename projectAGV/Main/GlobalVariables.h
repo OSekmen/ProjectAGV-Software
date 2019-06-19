@@ -1,10 +1,20 @@
 #pragma once
 #include "Vector.h"
 
+
+/*
+	TODO-list
+	- knop om te volgen
+	- boom detectie op scherm
+	- bocht maken
+	- positie bepaling maar 1 coordinaat punt
+	- alle pins invullen
+*/
+
+
 /*
 LOGLEVEL 0: Geen logs
-LOGLEVEL 1: State en afstand
-LOGLEVEL 2: Gemiddelde
+LOGLEVEL 1: Wel logs
 */
 #define LOGLEVEL 1
 #define PI 3.1415926535897932384626433832795

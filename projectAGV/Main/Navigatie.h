@@ -76,13 +76,6 @@ void createPath(Info info) {
 	switch (orientation) {
 	case Orientation::POSITIVE_X:
 	case Orientation::NEGATIVE_X:
-		/*_target.x = paths_vertical_x[!xi];
-		_target.y = paths_horizontal_y[treePathID + 1];
-		qPos.x = _target.x;
-		addToQueue(qPos);
-
-		qPos.y = _target.y;
-		addToQueue(qPos);*/
 		break;
 	case Orientation::POSITIVE_Y:
 	case Orientation::NEGATIVE_Y:
@@ -141,7 +134,7 @@ AandrijfMode Direction_To_AandrijfMode(Direction dir) {
 void setupNavigatie() {
 #ifdef StartX
 	orientation = Orientation::POSITIVE_X;
-	pos.x = 0; // TODO meten
+	pos.x = 2; // TODO meten
 	pos.y = paths_horizontal_y[1];
 	pathNumber = 1;
 #endif
@@ -164,6 +157,7 @@ void setupNavigatie() {
 
 	//TODO remove
 	//queue[0].y = 40000000;
+	//queue[0].x = 40000000;
 
 	target = queue[queueIndex];
 	navState = PATH_CALCULATION;
@@ -226,17 +220,16 @@ void loopNavigatie() {
 #pragma endregion
 #pragma region DRIVE_X
 		case DRIVE_X:
-			/// TODO iets naar de aandrijving waarbij de direction(globaal!) wordt mee gegeven
 			am = Direction_To_AandrijfMode(direction);
 
-			// TODO scannen voor bomen
+			// scannen voor bomen
 			if (boomGedetecteerd) {
 				signalEndMillis = millis() + 1000;
 				navState = SIGNALEREN;
 				am = Stop;
 			}
 
-			/// TODO scannen voor obstakels
+			// scannen voor obstakels
 			if (direction == Direction::FORWARDS) {
 				// Obstakel aan de voorkant
 				if (US_front->distance() <= stopDistance) {
@@ -253,14 +246,12 @@ void loopNavigatie() {
 			aandrijvingMode = am;
 
 
-			/// TODO y-coordinaat correctie
+			// y-coordinaat correctie
 			pos.y = target.y;
-
-			// TODO pad afvinken, stoppen met scannen voor bomen
 
 			// De AGV komt binnen x marge van de target, dit is ook een bocht
 			if (abs(verschil.x) < marge.x + stopVoorBocht.x) {
-				/// bocht richting bepalen
+				// bocht richting bepalen
 				Vector v = getNextCoord() - pos;
 
 				// Target is hoger
@@ -296,15 +287,20 @@ void loopNavigatie() {
 					}
 				}
 				navState = BOCHT;
+
+				// pad afvinken, stoppen met scannen voor bomen
+				uint8_t treePathID = 0;
+				while (treePathScanned[treePathID]) treePathID++;
+				treePathScanned[treePathID] = true;
+				TreeScanMode = 0;
 			}
 			break;
 #pragma endregion
 #pragma region DRIVE_Y
 		case DRIVE_Y:
-			/// TODO iets naar de aandrijving waarbij de direction(globaal!) wordt mee gegeven
 			am = Direction_To_AandrijfMode(direction);
 
-			/// TODO scannen voor obstakels
+			// scannen voor obstakels
 			if (direction == Direction::FORWARDS) {
 				// Obstakel aan de voorkant
 				if (US_front->distance() <= stopDistance) {
@@ -320,12 +316,12 @@ void loopNavigatie() {
 
 			aandrijvingMode = am;
 
-			/// TODO x-coordinaat correctie
+			// x-coordinaat correctie
 			pos.x = target.x;
 
-			/// TODO bepalen of de AGV bij een bocht is
+			// bepalen of de AGV bij een bocht is
 			if (abs(verschil.y) < marge.y + stopVoorBocht.y) {
-				/// bocht richting bepalen
+				// bocht richting bepalen
 				Vector v = getNextCoord() - pos;
 
 				// Target is rechts
@@ -369,8 +365,6 @@ void loopNavigatie() {
 			aandrijvingMode = Direction_To_AandrijfMode(bocht);
 
 			if (bochtGemaakt == true) {
-				//orientation = bocht; // TODO fixen
-
 				switch (orientation) {
 				case Orientation::POSITIVE_X:
 				case Orientation::NEGATIVE_X:
@@ -416,7 +410,6 @@ void loopNavigatie() {
 		// Vooruit
 		if (distanceFront > stopDistance + followMarge) {
 			aandrijvingMode = Vooruit;
-			// if (bijbocht) scannen na afstands inval
 		}
 		// Achteruit zolang dat kan
 		else if (distanceFront < stopDistance - followMarge &&

@@ -4,15 +4,8 @@
 #include "Pins.h"
 #include "GlobalVariables.h"
 
-/*
-Dummy variabelen moeten van andere software delen komen
-*/
-//int8_t dummyDirection = 1; // -1 rearuit, 0 stilstand, 1 frontuit
-//int8_t dummyMode = 1; // 0 normaal, 1 volgmode
-//bool bijBocht = false;
-// ---------------------------------------------------------------------
 const float stopDistance = 10;
-const float followMarge = 1;
+const float followMarge = 2;
 const uint32_t updateTime_ms = 10;
 uint64_t US_millis;
 
