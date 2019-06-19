@@ -13,7 +13,7 @@ Dummy variabelen moeten van andere software delen komen
 // ---------------------------------------------------------------------
 const float stopDistance = 5;
 const float followMarge = 1;
-const uint32_t updateTime_ms = 1;
+const uint32_t updateTime_ms = 10;
 uint64_t US_millis;
 
 #define NUM_MEASUREMENTS 10
@@ -27,7 +27,7 @@ float scanPoints[NUM_SCANPOINTS];
 
 class ObstakelDetectie {
 private:
-	uint16_t measurements[NUM_MEASUREMENTS];
+	float measurements[NUM_MEASUREMENTS];
 	uint8_t index;
 	uint8_t trig;
 	uint8_t echo;
@@ -63,13 +63,13 @@ public:
 		}
 	}
 
-	long singleMeasurement_cm() {
-		long duration = 0;
+	float singleMeasurement_cm() {
+		unsigned long duration = 0;
 		digitalWrite(trig, HIGH);
 		delayMicroseconds(11);
 		digitalWrite(trig, LOW);
 		duration = pulseIn(echo, HIGH);
-		return (long)((((float)duration / USONIC_DIV) * 10.0) / 10);
+		return ((float)duration / USONIC_DIV);
 	}
 
 	/*
@@ -138,7 +138,7 @@ void setupObstakelDetectie() {
 	digitalWrite(FRONT_TRIGGER, LOW);
 	digitalWrite(REAR_TRIGGER, LOW);
 
-	delay(50);
+	delay(5);
 
 	US_front = new ObstakelDetectie(FRONT_TRIGGER, FRONT_ECHO, SERVO);
 	US_rear = new ObstakelDetectie(REAR_TRIGGER, REAR_ECHO);
@@ -154,7 +154,7 @@ uint16_t scanMeasureIndex;
 void loopObstakelDetectie() {
 	if (millis() - US_millis > updateTime_ms) {
 		US_front->read();
-		US_rear->read();
+		//US_rear->read();
 
 		US_millis = millis();
 		if (mode == Mode::NORMAL) { // normale mode

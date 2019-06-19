@@ -12,27 +12,30 @@
 
 #include "Aandrijving.h"
 #include "ToF_Detectie.h"
-//#include "ObstakelDetectie.h"
+#include "ObstakelDetectie.h"
 #include "Navigatie.h"
+//#include "Communicatie.h"
 
 void setup() {
 	Serial.begin(9600);
 
 	pinMode(NOODSTOP, INPUT);
 
-	//setupObstakelDetectie();
+	setupObstakelDetectie();
 	setup_ToF_Detectie();
 	setupNavigatie();
 	setupAandrijving();
+	//setupCommunicatie();
 }
 
 uint32_t nextMillis;
 
 void loop() {
-	//loopObstakelDetectie();
+	loopObstakelDetectie();
 	loop_ToF_Detectie();
 	loopNavigatie();
 	loopAandrijving();
+	//loopCommunicatie();
 
 #if LOGLEVEL > 0
 	if (millis() >= nextMillis) {
