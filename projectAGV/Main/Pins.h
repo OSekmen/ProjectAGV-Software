@@ -12,17 +12,17 @@ In dit bestand staan welke pins gebruikt moeten worden
 #pragma endregion
 
 #pragma region ToF Detectie
-#define RESET_RAND_L (1<<1)
-#define RESET_RAND_R (1<<2)
-#define RESET_BOOM_L (1<<3)
-#define RESET_BOOM_R (1<<0)
+#define RESET_RAND_R (1<<1)
+#define RESET_RAND_L (1<<2)
+#define RESET_BOOM_R (1<<3)
+#define RESET_BOOM_L (1<<0)
 #pragma endregion
 
 #pragma region Aandrijving
-#define DIRECTION_L A2
-#define PULSE_L		A3
-#define DIRECTION_R A0
-#define PULSE_R		A1
+#define DIRECTION_R A2
+#define PULSE_R		A3
+#define DIRECTION_L A0
+#define PULSE_L		A1
 #pragma endregion
 
 #pragma region IC Control

@@ -2,28 +2,71 @@
 #include "Pins.h"
 #include "GlobalVariables.h"
 
-VL53L0X sensorRand_L;
+#define NUM_TOF_MEASUREMENTS 1
+
 VL53L0X sensorRand_R;
-VL53L0X sensorBoom_L;
+VL53L0X sensorRand_L;
 VL53L0X sensorBoom_R;
+VL53L0X sensorBoom_L;
 
 byte TreeScanMode; // welke kant moet er gescand worden
 boolean StopCommand; // commando om de AGV te stoppen 
 
 VL53L0X* ToFSensors[] = { &sensorRand_L, &sensorRand_R, &sensorBoom_L, &sensorBoom_R };
 const int sensorAddresses[] = { 0x30, 0x31, 0x32, 0x33 };
-const int sensorPinResetArray[] = { RESET_RAND_L, RESET_RAND_R, RESET_BOOM_L, RESET_BOOM_R };
+const int sensorPinResetArray[] = { RESET_RAND_R, RESET_RAND_L, RESET_BOOM_R, RESET_BOOM_L };
 
 enum sensorName {
-	Rand_L = 0,
-	Rand_R = 1,
-	Boom_L = 2,
-	Boom_R = 3
+	Rand_R = 0,
+	Rand_L = 1,
+	Boom_R = 2,
+	Boom_L = 3
 } SensorName;
 
-long Distance; // afstand tot hek
-//int pwm; vervangen door bijstuurWaarde
+int readToF_mm(VL53L0X* sensor) {
+	return sensor->readRangeSingleMillimeters();
+}
 
+float readToF_cm(VL53L0X* sensor) {
+	return (float)sensor->readRangeSingleMillimeters() / 10.0;
+}
+
+class ToF {
+private:
+	float measurements[NUM_TOF_MEASUREMENTS];
+	uint8_t index;
+	sensorName sensor;
+
+public:
+	ToF() {}
+	ToF(sensorName _sensor) {
+		sensor = _sensor;
+		index = 0;
+
+		uint16_t m = readToF_mm(ToFSensors[sensor]);
+		for (uint8_t i = 0; i < NUM_TOF_MEASUREMENTS; i++) {
+			measurements[i] = m;
+		}
+	};
+
+	float read() {
+		if (index >= NUM_TOF_MEASUREMENTS) index = 0;
+		measurements[index] = readToF_mm(ToFSensors[sensor]);
+		return measurements[index++];
+	}
+
+	float distance() {
+		float v = 0;
+		for (uint8_t i = 0; i < NUM_TOF_MEASUREMENTS; i++) {
+			v += measurements[i];
+		}
+		v /= NUM_TOF_MEASUREMENTS;
+		return v;
+	}
+};
+
+ToF randR;
+ToF randL;
 
 
 void resetToFsensor(uint8_t sensorNumber) {
@@ -93,13 +136,7 @@ void setupResetToFsensor(uint8_t sensorNumber) {
 	ToFSensors[sensorNumber]->setTimeout(500);
 }
 
-int readToF_mm(VL53L0X* sensor) {
-	return sensor->readRangeSingleMillimeters();
-}
 
-float readToF_cm(VL53L0X* sensor) {
-	return (float)sensor->readRangeSingleMillimeters() / 10.0;
-}
 
 bool ScanTree(uint8_t sensorNumber) {
 	static bool reset[sizeof ToFSensors];
@@ -120,7 +157,7 @@ bool ScanTree(uint8_t sensorNumber) {
 	}
 }
 
-void TreeProssing(uint8_t mode, boolean * command) {
+void TreeProssing(uint8_t mode) {
 	switch (mode) {
 	case 0:	//geen scan
 		break;
@@ -153,15 +190,19 @@ void TreeProssing(uint8_t mode, boolean * command) {
 #pragma region Rand Detectie
 void scanOneSide(double& bijstuurWaarde, double& distance, StuurRichting& turnSide, boolean side, uint16_t space)
 {
-	int16_t distanceScan;
+	float distanceScan;
 	if (!side) // links scannen
 	{
-		distanceScan = (cos(AGV_Angle_RAD) * readToF_mm(ToFSensors[Rand_L])) - 40;
+		//distanceScan = (cos(AGV_Angle_RAD) * readToF_mm(ToFSensors[Rand_L])) - 40;
+		//distanceScan = readToF_mm(ToFSensors[Rand_L]) - 40;
+		distanceScan = randL.distance() - 40;
 	}
 
 	else if (side) // rechts scannen
 	{
-		distanceScan = (cos(AGV_Angle_RAD) * readToF_mm(ToFSensors[Rand_R])) - 40;
+		//distanceScan = (cos(AGV_Angle_RAD) * readToF_mm(ToFSensors[Rand_R])) - 40;
+		//distanceScan = readToF_mm(ToFSensors[Rand_R]) - 40;
+		distanceScan = randR.distance() - 40;
 	}
 
 
@@ -169,7 +210,7 @@ void scanOneSide(double& bijstuurWaarde, double& distance, StuurRichting& turnSi
 
 	if (distanceScan < distance)
 	{
-		bijstuurWaarde = distanceScan;
+		bijstuurWaarde = distance - distanceScan;
 
 		if (!side)
 		{
@@ -184,7 +225,7 @@ void scanOneSide(double& bijstuurWaarde, double& distance, StuurRichting& turnSi
 
 	else if (distanceScan > distance)
 	{
-		bijstuurWaarde = 2 * distance - distanceScan;
+		bijstuurWaarde = distance - distanceScan;
 
 		if (!side)
 		{
@@ -208,24 +249,27 @@ void scanTwoSides(double& bijstuurWaarde, double& distance, StuurRichting& turnS
 	//int16_t distanceL = (cos(AGV_Angle_RAD) * readToF_mm(ToFSensors[Rand_L])) - 40;
 	//int16_t distanceR = (cos(AGV_Angle_RAD) * readToF_mm(ToFSensors[Rand_R])) - 40;
 
-	int16_t distanceL = (readToF_mm(ToFSensors[Rand_L])) - 40;
-	int16_t distanceR = (readToF_mm(ToFSensors[Rand_R])) - 40;
+	//int16_t distanceL = (readToF_mm(ToFSensors[Rand_L])) - 40;
+	//int16_t distanceR = (readToF_mm(ToFSensors[Rand_R])) - 40;
 
-	distance = (distanceL + distanceR) / 2;
+	float distanceL = randL.distance() - 40;
+	float distanceR = randR.distance() - 40;
+
+	distance = (distanceL + distanceR) / 2 ;
 
 	if (distanceL < distance && distanceR > distance)
 	{
-		bijstuurWaarde = distanceL;
+		bijstuurWaarde = distance - distanceL;
 		turnSide = StuurRichting::RIGHT;
 	}
 
 	else if (distanceL > distance && distanceR < distance)
 	{
-		bijstuurWaarde = distanceR;
+		bijstuurWaarde = distance - distanceR;
 		turnSide = StuurRichting::LEFT;
 	}
 
-	else if (distanceL == distance)
+	else //if (distanceL == distance)
 	{
 		bijstuurWaarde = 0;
 		turnSide = StuurRichting::STADY;
@@ -239,8 +283,8 @@ void stuurRichting(double& bijstuurWaarde, double& distance, StuurRichting& turn
 		left,
 		right
 	};
-	const uint16_t path_0_3 = 100;
-	const uint16_t path_4_5 = 150 - 85 + 22.5;
+	const uint16_t path_0_3 = 100 - 85 + 22;
+	const uint16_t path_4_5 = 150 - 85 + 22;
 
 	switch (pathNumber)
 	{
@@ -322,12 +366,23 @@ void setup_ToF_Detectie() {
 	pinMode(CLOCKPIN, OUTPUT);
 	pinMode(DATAPIN, OUTPUT);
 
+
 	for (int i = 0; i <= 3; i++) { setupResetToFsensor(i); }
+
+	delay(10);
+	randR = ToF(Rand_R);
+	randL = ToF(Rand_L);
 }
 
 void loop_ToF_Detectie() {
 	//TreeScanMode = 1;
-	TreeProssing(TreeScanMode, &StopCommand);
+	TreeProssing(TreeScanMode);
+	randR.read();
+	randL.read();
+
+	/*Serial.print(randR.distance());
+	Serial.print("  ");
+	Serial.println(randL.distance());*/
 
 	//stuurRichting(distanceL, distanceR);
 }
