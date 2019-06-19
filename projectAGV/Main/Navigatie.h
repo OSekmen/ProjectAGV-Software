@@ -11,14 +11,6 @@ const float paths_horizontal_y[] = { 10.25, 36.75, 63.25, 89.75 };
 const float paths_vertical_x[] = { 15.0, 185.0 };
 bool treePathScanned[] = { false, false, false };
 
-enum NavigationState {
-	PATH_CALCULATION,
-	DRIVE_X,
-	DRIVE_Y,
-	BOCHT,
-	SIGNALEREN
-};
-
 struct Info {
 	Vector pos;
 	Direction direction;
@@ -33,7 +25,6 @@ uint32_t signalEndMillis;
 Direction bocht;
 Orientation orientation_naBocht;
 
-NavigationState navState;
 Vector stopVoorBocht(0, 0);
 Vector marge(0.1, 0.1);
 
@@ -181,7 +172,7 @@ void setupNavigatie() {
 	//pos.y = US_rear->distance() + 14.3;
 	pos.x = paths_vertical_x[0];
 	pos.y = 0; // TODO meten
-	pathNumber = 1; //TODO = 4
+	pathNumber = 4; //TODO = 4
 
 	createPath(info);
 
@@ -200,6 +191,8 @@ void setupNavigatie() {
 	navState = PATH_CALCULATION;
 }
 
+AandrijfMode am;
+
 void loopNavigatie() {
 	Vector verschil = target - pos;
 #pragma region NORMAL
@@ -207,7 +200,6 @@ void loopNavigatie() {
 		switch (navState) {
 #pragma region PATH_CALCULATION
 		case PATH_CALCULATION:
-
 			target = getCoord();
 			verschil = target - pos;
 
@@ -237,10 +229,26 @@ void loopNavigatie() {
 #pragma region DRIVE_X
 		case DRIVE_X:
 			/// TODO iets naar de aandrijving waarbij de direction(globaal!) wordt mee gegeven
-			aandrijvingMode = Direction_To_AandrijfMode(direction);
+			am = Direction_To_AandrijfMode(direction);
+
 			// TODO scannen voor bomen
 
-			// TODO scannen voor obstakels
+			/// TODO scannen voor obstakels
+			if (direction == Direction::FORWARDS) {
+				// Obstakel aan de voorkant
+				if (US_front->distance() <= stopDistance) {
+					am = Stop;
+				}
+			}
+			else if (direction == Direction::BACKWARDS) {
+				// Obstakel aan de achterkant
+				if (US_rear->distance() <= stopDistance) {
+					am = Stop;
+				}
+			}
+
+			aandrijvingMode = am;
+
 
 			/// TODO y-coordinaat correctie
 			pos.y = target.y;
@@ -290,10 +298,24 @@ void loopNavigatie() {
 #pragma endregion
 #pragma region DRIVE_Y
 		case DRIVE_Y:
-			/// TODO iets naar de aandrijving waarbij de direction(globaal!) wordt mee gegeven
-			aandrijvingMode = Direction_To_AandrijfMode(direction);
+			// TODO iets naar de aandrijving waarbij de direction(globaal!) wordt mee gegeven
+			am = Direction_To_AandrijfMode(direction);
 
-			// TODO scannen voor obstakels
+			/// TODO scannen voor obstakels
+			if (direction == Direction::FORWARDS) {
+				// Obstakel aan de voorkant
+				if (US_front->distance() <= stopDistance) {
+					am = Stop;
+				}
+			}
+			else if (direction == Direction::BACKWARDS) {
+				// Obstakel aan de achterkant
+				if (US_rear->distance() <= stopDistance) {
+					am = Stop;
+				}
+			}
+
+			aandrijvingMode = am;
 
 			/// TODO x-coordinaat correctie
 			pos.x = target.x;
@@ -337,12 +359,10 @@ void loopNavigatie() {
 				}
 				navState = BOCHT;
 			}
-
 			break;
 #pragma endregion
 #pragma region BOCHT
 		case BOCHT:
-
 			aandrijvingMode = Direction_To_AandrijfMode(bocht);
 
 			if (bochtGemaakt == true) {
@@ -402,7 +422,7 @@ void loopNavigatie() {
 		else {
 			aandrijvingMode = Stop;
 		}
-		
+
 	}
 #pragma endregion
 }

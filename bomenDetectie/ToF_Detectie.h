@@ -129,6 +129,7 @@ void TreeProssing(uint8_t mode, boolean * command) {
 		if (ScanTree(Boom_L)) {
 			// doe iets!
 			//*command = true;
+			Serial.println("boom links");
 			boomGedetecteerd = true;
 		}
 		else
@@ -333,6 +334,7 @@ void setup_ToF_Detectie() {
 }
 
 void loop_ToF_Detectie() {
+	ScaneMode = Boom_L;
 	TreeProssing(ScaneMode, &StopCommand);
 
 

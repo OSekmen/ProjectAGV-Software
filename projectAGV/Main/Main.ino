@@ -14,7 +14,7 @@
 #include "ToF_Detectie.h"
 #include "ObstakelDetectie.h"
 #include "Navigatie.h"
-//#include "Communicatie.h"
+#include "Communicatie.h"
 
 void setup() {
 	Serial.begin(9600);
@@ -25,7 +25,7 @@ void setup() {
 	setup_ToF_Detectie();
 	setupNavigatie();
 	setupAandrijving();
-	//setupCommunicatie();
+	setupCommunicatie();
 }
 
 uint32_t nextMillis;
@@ -35,11 +35,11 @@ void loop() {
 	loop_ToF_Detectie();
 	loopNavigatie();
 	loopAandrijving();
-	//loopCommunicatie();
+	loopCommunicatie();
 
 #if LOGLEVEL > 0
 	if (millis() >= nextMillis) {
-		/*Serial.print("pos: ");
+		Serial.print("pos: ");
 		Serial.print(pos.x);
 		Serial.print(", ");
 		Serial.print(pos.y);
@@ -50,10 +50,12 @@ void loop() {
 		Serial.print(", ");
 		Serial.print(target.y);
 		Serial.print(", Direction: ");
-		printDirection(direction);
-		Serial.println();
-		*/
-
+		Serial.print(printDirection(direction));
+		Serial.print(", nav: ");
+		printNavstate(navState);
+		Serial.print(", aandrijving: ");
+		printAandrijving(aandrijvingMode);
+		Serial.print(", US_front: ");
 		Serial.print(US_front->distance());
 		Serial.println();
 		nextMillis = millis() + 500;

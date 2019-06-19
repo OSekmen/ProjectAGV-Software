@@ -1,4 +1,5 @@
 #pragma once
+#include "GlobalVariables.h"
 
 String text; //var String for raw input
 String command; //var String for editted input
@@ -10,11 +11,10 @@ uint32_t previousmillis;
 int cntFF;
 
 void inputCode() {
-	Serial.println(Serial1.available());
 	while (Serial1.available() > 0) { //while nextion --> arduino communication
 		//static int cntFF;
 		input = Serial1.read();
-		Serial.print(input);
+		//Serial.print(input);
 		switch (input) {
 		case 0: //ignore error message
 			break;
@@ -35,13 +35,20 @@ void inputCode() {
 			text += char(input); // ASCII hex to char
 			break;
 		}
-		Serial.println(cntFF);
+		//Serial.println(cntFF);
 		if (cntFF == 3) { //3 Stop codes = end of transmission
-			Serial.println(text);
+			//Serial.println(text);
 			switch (text[0]) {
 			case 'D':
-				Serial.println("Magic3.0");
+				schermMode = Scherm::DEBUG;
 				break;
+			case 'H':
+				schermMode = Scherm::HOME;
+				break;
+			case 'M':
+				schermMode = Scherm::MANUAL;
+				break;
+
 			/*case 'M':
 				magnet = !magnet;
 				digitalWrite(33, magnet);
@@ -155,12 +162,13 @@ String nexWriteTxt(String screen, String element, String msg) {
 }
 
 void setupCommunicatie() {
+	schermMode = Scherm::HOME;
 	Serial1.begin(9600);
 	previousmillis = millis();
 }
 
 void loopCommunicatie() {
-	millisnow = millis();
+	/*millisnow = millis();
 
 	inputCode();
 
@@ -168,7 +176,7 @@ void loopCommunicatie() {
 		if (!Serial1.available()) {
 			Serial.println("magic");
 			//writeToNextion();
-			String cmd = nexWriteTxt("page0", "t2", "12");
+			String cmd = nexWriteTxt("Debug", "t2", "12");
 
 			Serial.print(cmd);
 			Serial.write(0xff);
@@ -176,6 +184,18 @@ void loopCommunicatie() {
 			Serial.write(0xff);
 		}
 
+		previousmillis = millis();
+	}*/
+	inputCode();
+	if (millis() - previousmillis > 250 && schermMode == Scherm::DEBUG) {
+		nexWriteTxt("Debug", "t6", String(readToF_mm(ToFSensors[Rand_L])));
+		nexWriteTxt("Debug", "t7", String(readToF_mm(ToFSensors[Rand_R])));
+		nexWriteTxt("Debug", "t8", String(0));
+		nexWriteTxt("Debug", "t9", String(0));
+		nexWriteTxt("Debug", "t10", String(pos.x));
+		nexWriteTxt("Debug", "t11", String(pos.y));
+		nexWriteTxt("Debug", "t13", String(AGV_Angle_RAD));
+		nexWriteTxt("Debug", "t14", String(printDirection(direction)));
 		previousmillis = millis();
 	}
 }

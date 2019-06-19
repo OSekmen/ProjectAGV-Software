@@ -52,6 +52,20 @@ enum class StuurRichting {
 	RIGHT
 };
 
+enum NavigationState {
+	PATH_CALCULATION,
+	DRIVE_X,
+	DRIVE_Y,
+	BOCHT,
+	SIGNALEREN
+};
+
+enum class Scherm {
+	DEBUG,
+	HOME,
+	MANUAL
+};
+
 class ObstakelDetectie;
 //---------------------------------
 
@@ -64,6 +78,9 @@ static Mode mode = Mode::NORMAL;
 static Direction obstakelState;
 static Direction direction; // wordt alleen BACKWARDS, STOP of FORWARDS
 static AandrijfMode aandrijvingMode;
+
+static NavigationState navState;
+static Scherm schermMode;
 
 //static int16_t bijstuurWaarde;
 static bool bijBocht = false;
@@ -84,22 +101,57 @@ static ObstakelDetectie* US_rear;
 
 static double AGV_Angle_RAD = -PI / 2;
 
-void printDirection(Direction dir) {
+String printDirection(Direction dir) {
 	switch (dir) {
 	case Direction::BACKWARDS:
-		Serial.print("BACKWARDS");
-		break;
+		return "Backwards";
 	case Direction::STOP:
-		Serial.print("STOP");
-		break;
+		return "Stop";
 	case Direction::FORWARDS:
-		Serial.print("FORWARDS");
-		break;
+		return "Forwards";
 	case Direction::LEFT:
-		Serial.print("LEFT");
-		break;
+		return "Left";
 	case Direction::RIGHT:
-		Serial.print("RIGHT");
+		return "Right";
+	}
+}
+
+void printAandrijving(AandrijfMode a) {
+	switch (a) {
+	case Stop:
+		Serial.print("Stop");
+		break;
+	case Vooruit:
+		Serial.print("Vooruit");
+		break;
+	case Achteruit:
+		Serial.print("Achteruit");
+		break;
+	case Linksom:
+		Serial.print("Linksom");
+		break;
+	case Rechtsom:
+		Serial.print("Rechtsom");
+		break;
+	}
+}
+
+void printNavstate(NavigationState n) {
+	switch (n) {
+	case PATH_CALCULATION:
+		Serial.print("PC");
+		break;
+	case DRIVE_X:
+		Serial.print("DRIVE_X");
+		break;
+	case DRIVE_Y:
+		Serial.print("DRIVE_Y");
+		break;
+	case BOCHT:
+		Serial.print("BOCHT");
+		break;
+	case SIGNALEREN:
+		Serial.print("SIGNALEREN");
 		break;
 	}
 }

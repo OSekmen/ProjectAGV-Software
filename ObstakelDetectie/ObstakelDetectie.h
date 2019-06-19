@@ -11,7 +11,7 @@ Dummy variabelen moeten van andere software delen komen
 //int8_t dummyMode = 1; // 0 normaal, 1 volgmode
 //bool bijBocht = false;
 // ---------------------------------------------------------------------
-const float stopDistance = 5;
+const float stopDistance = 10;
 const float followMarge = 1;
 const uint32_t updateTime_ms = 10;
 uint64_t US_millis;
@@ -157,32 +157,8 @@ void loopObstakelDetectie() {
 		//US_rear->read();
 
 		US_millis = millis();
-		if (mode == Mode::NORMAL) { // normale mode
-			US_front->servo.write(90);
-			switch (direction) {
-			case Direction::BACKWARDS:
-				if (US_rear->distance() <= stopDistance) {
-					obstakelState = Direction::STOP;
-				}
-				else {
-					obstakelState = Direction::BACKWARDS;
-				}
-				break;
-			case Direction::STOP:
-				obstakelState = Direction::STOP;
-				break;
-			case Direction::FORWARDS:
-				if (US_front->distance() <= stopDistance) {
-					obstakelState = Direction::STOP;
-				}
-				else {
-					obstakelState = Direction::FORWARDS;
-				}
-				break;
-			}
-		}
 
-		else if (false) { // volg mode
+		/*else if (false) { // volg mode
 			float distance = US_front->distance();
 			switch (obstakelState) {
 			case Direction::FORWARDS:
@@ -255,8 +231,8 @@ void loopObstakelDetectie() {
 							US_front->servo.write(targetAngle);
 						}
 					}
-					break;*/
+					break;*
 			}
-		}
+		}*/
 	}
 }
