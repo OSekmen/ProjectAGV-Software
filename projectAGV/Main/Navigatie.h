@@ -18,7 +18,7 @@ struct Info {
 	Orientation orientation;
 };
 
-Info info = { Vector(paths_vertical_x[0], 0), Direction::STOP, Orientation::POSITIVE_Y };
+Info info = { Vector(0, paths_horizontal_y[1]), Direction::STOP, Orientation::POSITIVE_Y };
 
 NavigationState prevNavState;
 uint32_t signalEndMillis;
@@ -55,15 +55,6 @@ void addToQueue(Vector v) {
 }
 
 uint8_t xi;
-/*uint8_t next_xi() {
-	/*if (xi == 0) {
-		return xi = 1;
-	}
-	else if (xi == 1) {
-		return xi = 0;
-	}*
-	return !xi;
-}*/
 
 void createPath(Info info) {
 	uint8_t treePathID = 0;
@@ -85,11 +76,17 @@ void createPath(Info info) {
 	switch (orientation) {
 	case Orientation::POSITIVE_X:
 	case Orientation::NEGATIVE_X:
+		/*_target.x = paths_vertical_x[!xi];
+		_target.y = paths_horizontal_y[treePathID + 1];
 		qPos.x = _target.x;
 		addToQueue(qPos);
+
+		qPos.y = _target.y;
+		addToQueue(qPos);*/
+		break;
 	case Orientation::POSITIVE_Y:
 	case Orientation::NEGATIVE_Y:
-		qPos.y = _target.y;
+		qPos = _target;
 		addToQueue(qPos);
 		break;
 	}
@@ -97,7 +94,8 @@ void createPath(Info info) {
 	uint8_t h3Counter = 0;
 	while (true) {
 		// x
-		qPos.x = paths_vertical_x[!xi];
+		xi = !xi;
+		qPos.x = paths_vertical_x[xi];
 		addToQueue(qPos);
 
 		// De AGV is boven en klaar met alle paden, eide van de queue
@@ -138,13 +136,21 @@ AandrijfMode Direction_To_AandrijfMode(Direction dir) {
 	return Stop;
 }
 
+#define StartX
+
 void setupNavigatie() {
+#ifdef StartX
+	orientation = Orientation::POSITIVE_X;
+	pos.x = 0; // TODO meten
+	pos.y = paths_horizontal_y[1];
+	pathNumber = 1;
+#endif
+#ifndef StartX
 	orientation = Orientation::POSITIVE_Y;
-	//pos.x = readToF_cm(ToFSensors[Rand_L]) + 2;
-	//pos.y = US_rear->distance() + 14.3;
 	pos.x = paths_vertical_x[0];
 	pos.y = 0; // TODO meten
-	pathNumber = 4; //TODO = 4
+	pathNumber = 4;
+#endif
 
 	createPath(info);
 
@@ -157,7 +163,7 @@ void setupNavigatie() {
 	}
 
 	//TODO remove
-	queue[0].y = 40000000;
+	//queue[0].y = 40000000;
 
 	target = queue[queueIndex];
 	navState = PATH_CALCULATION;
