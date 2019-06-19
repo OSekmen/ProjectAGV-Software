@@ -7,7 +7,7 @@ VL53L0X sensorRand_R;
 VL53L0X sensorBoom_L;
 VL53L0X sensorBoom_R;
 
-byte ScaneMode; // welke kant moet er gescand worden
+byte TreeScanMode; // welke kant moet er gescand worden
 boolean StopCommand; // commando om de AGV te stoppen 
 
 VL53L0X* ToFSensors[] = { &sensorRand_L, &sensorRand_R, &sensorBoom_L, &sensorBoom_R };
@@ -170,7 +170,7 @@ void scanOneSide(double& bijstuurWaarde, double& distance, StuurRichting& turnSi
 	if (distanceScan < distance)
 	{
 		bijstuurWaarde = distanceScan;
-		
+
 		if (!side)
 		{
 			turnSide = StuurRichting::RIGHT;
@@ -179,13 +179,13 @@ void scanOneSide(double& bijstuurWaarde, double& distance, StuurRichting& turnSi
 		{
 			turnSide = StuurRichting::LEFT;
 		}
-		
+
 	}
 
 	else if (distanceScan > distance)
 	{
 		bijstuurWaarde = 2 * distance - distanceScan;
-		
+
 		if (!side)
 		{
 			turnSide = StuurRichting::LEFT;
@@ -195,7 +195,7 @@ void scanOneSide(double& bijstuurWaarde, double& distance, StuurRichting& turnSi
 			turnSide = StuurRichting::RIGHT;
 		}
 	}
-	
+
 	else // if (distanceScan == distance)
 	{
 		bijstuurWaarde = 0;
@@ -322,29 +322,12 @@ void setup_ToF_Detectie() {
 	pinMode(CLOCKPIN, OUTPUT);
 	pinMode(DATAPIN, OUTPUT);
 
-	//for (int i = 0; i <= 3; i++) { 
-	//	
-
-	//	digitalWrite(LATCHPIN, LOW);
-	//	IC_REG = IC_REG & ~sensorPinResetArray[i];
-	//	shiftOut(DATAPIN, CLOCKPIN, LSBFIRST, IC_REG);
-	//	digitalWrite(LATCHPIN, HIGH);
-	//	 }
-	
-	
-
 	for (int i = 0; i <= 3; i++) { setupResetToFsensor(i); }
 }
 
 void loop_ToF_Detectie() {
-	ScaneMode = Boom_L;
-	TreeProssing(ScaneMode, &StopCommand);
-
-
-
-
-	// put your main code here, to run repeatedly:
-	
+	//TreeScanMode = 1;
+	TreeProssing(TreeScanMode, &StopCommand);
 
 	//stuurRichting(distanceL, distanceR);
 }

@@ -9,6 +9,7 @@ Positie van paden ligt vast
 */
 const float paths_horizontal_y[] = { 10.25, 36.75, 63.25, 89.75 };
 const float paths_vertical_x[] = { 15.0, 185.0 };
+const float treePaths_horizontal_y[] = { 23.5, 50.0, 76.5 };
 bool treePathScanned[] = { false, false, false };
 
 struct Info {
@@ -121,35 +122,6 @@ Vector getCoord() {
 	return queue[queueIndex];
 }
 
-/*bool onTarget(Vector marge) {
-	Vector verschil = target - pos;
-	if (abs(verschil.x) < marge.x && abs(verschil.y) < marge.y) return true;
-	return false;
-}*/
-
-/*
-bool bijBocht(Vector& b) {
-	Vector t;
-	if (direction == Direction::FORWARDS) {
-		switch (orientation) {
-		case Orientation::POSITIVE_X:
-			t = { paths_vertical_x[1], pos.y };
-			Vector v = t - pos;
-			break;
-		case Orientation::NEGATIVE_X:
-			t = { paths_vertical_x[0], pos.y };
-			break;
-		case Orientation::POSITIVE_Y:
-			t = {pos.x, pa}
-			break;
-		case Orientation::NEGATIVE_Y:
-			break;
-		}
-	}
-
-	return false;
-}*/
-
 AandrijfMode Direction_To_AandrijfMode(Direction dir) {
 	switch (dir) {
 	case Direction::BACKWARDS:
@@ -223,6 +195,26 @@ void loopNavigatie() {
 				}
 
 				direction = (Direction)d;
+
+				switch (pathNumber) {
+				case 1:
+				case 2:
+				case 3:
+					if (!treePathScanned[pathNumber - 1]) {
+						if (orientation == Orientation::POSITIVE_X) {
+							// Rechts
+							TreeScanMode = 2;
+						}
+						else if (orientation == Orientation::NEGATIVE_X) {
+							// Links
+							TreeScanMode = 1;
+						}
+					}
+					else {
+						TreeScanMode = 0;
+					}
+					break;
+				}
 			}
 			break;
 #pragma endregion
@@ -232,6 +224,11 @@ void loopNavigatie() {
 			am = Direction_To_AandrijfMode(direction);
 
 			// TODO scannen voor bomen
+			if (boomGedetecteerd) {
+				signalEndMillis = millis() + 1000;
+				navState = SIGNALEREN;
+				am = Stop;
+			}
 
 			/// TODO scannen voor obstakels
 			if (direction == Direction::FORWARDS) {
@@ -257,7 +254,7 @@ void loopNavigatie() {
 
 			// De AGV komt binnen x marge van de target, dit is ook een bocht
 			if (abs(verschil.x) < marge.x + stopVoorBocht.x) {
-				// bocht richting bepalen
+				/// bocht richting bepalen
 				Vector v = getNextCoord() - pos;
 
 				// Target is hoger
@@ -298,7 +295,7 @@ void loopNavigatie() {
 #pragma endregion
 #pragma region DRIVE_Y
 		case DRIVE_Y:
-			// TODO iets naar de aandrijving waarbij de direction(globaal!) wordt mee gegeven
+			/// TODO iets naar de aandrijving waarbij de direction(globaal!) wordt mee gegeven
 			am = Direction_To_AandrijfMode(direction);
 
 			/// TODO scannen voor obstakels
@@ -322,7 +319,7 @@ void loopNavigatie() {
 
 			/// TODO bepalen of de AGV bij een bocht is
 			if (abs(verschil.y) < marge.y + stopVoorBocht.y) {
-				// bocht richting bepalen
+				/// bocht richting bepalen
 				Vector v = getNextCoord() - pos;
 
 				// Target is rechts
@@ -396,7 +393,8 @@ void loopNavigatie() {
 #pragma region SIGNALEREN
 		case SIGNALEREN:
 			if (millis() >= signalEndMillis) {
-				navState = prevNavState;
+				boomGedetecteerd = false;
+				navState = DRIVE_X;
 			}
 			break;
 #pragma endregion

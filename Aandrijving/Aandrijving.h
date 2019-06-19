@@ -206,6 +206,8 @@ void setupAandrijving()
 
 void loopAandrijving()
 {
+	// TODO noodstop lezen en stoppen 
+
 	static boolean firstHandel[5];
 	
 	double _bijstuurWaarde;
