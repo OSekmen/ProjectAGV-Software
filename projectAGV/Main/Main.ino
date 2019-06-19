@@ -9,7 +9,6 @@
 #include <Wire.h>
 
 #include <Servo.h>
-#include <Ultrasonic.h>
 
 #include "Aandrijving.h"
 #include "ToF_Detectie.h"
@@ -37,7 +36,7 @@ void loop() {
 
 #if LOGLEVEL > 0
 	if (millis() >= nextMillis) {
-		Serial.print("pos: ");
+		/*Serial.print("pos: ");
 		Serial.print(pos.x);
 		Serial.print(", ");
 		Serial.print(pos.y);
@@ -50,7 +49,10 @@ void loop() {
 		Serial.print(", Direction: ");
 		printDirection(direction);
 		Serial.println();
+		*/
 
+		Serial.print(US_front->distance());
+		Serial.println();
 		nextMillis = millis() + 500;
 	}
 #endif

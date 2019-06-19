@@ -69,6 +69,8 @@ static AandrijfMode aandrijvingMode;
 static bool bijBocht = false;
 static bool bochtGemaakt;
 
+static bool boomGedetecteerd = false;
+
 static Orientation orientation;
 static Vector pos;
 static Vector target;

@@ -181,8 +181,7 @@ void setupNavigatie() {
 	//pos.y = US_rear->distance() + 14.3;
 	pos.x = paths_vertical_x[0];
 	pos.y = 0; // TODO meten
-	//target = Vector(paths_vertical_x[0], paths_horizontal_y[1]);
-	pathNumber = 1;
+	pathNumber = 1; //TODO = 4
 
 	createPath(info);
 

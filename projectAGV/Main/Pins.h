@@ -4,9 +4,9 @@ In dit bestand staan welke pins gebruikt moeten worden
 */
 
 #pragma region Obstakel Detectie
-#define FRONT_TRIGGER 0
+#define FRONT_TRIGGER 4
 #define REAR_TRIGGER 0
-#define FRONT_ECHO 0
+#define FRONT_ECHO 5
 #define REAR_ECHO 0
 #define SERVO 0
 #pragma endregion

@@ -128,19 +128,23 @@ void TreeProssing(uint8_t mode, boolean * command) {
 	case 1:	//links van AGV
 		if (ScanTree(Boom_L)) {
 			// doe iets!
-			*command = true;
+			//*command = true;
+			boomGedetecteerd = true;
 		}
 		else
-			*command = false;
+			//*command = false;
+			boomGedetecteerd = false;
 		break;
 
 	case 2:	//rechts van AGV
 		if (ScanTree(Boom_R)) {
 			// doe iets!
-			*command = true;
+			//*command = true;
+			boomGedetecteerd = true;
 		}
 		else
-			*command = false;
+			//*command = false;
+			boomGedetecteerd = false;
 		break;
 	}
 }

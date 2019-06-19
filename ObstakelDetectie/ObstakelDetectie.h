@@ -1,6 +1,5 @@
 #pragma once
 #include <Servo.h>
-#include <Ultrasonic.h>
 #include <HardwareSerial.h>
 #include "Pins.h"
 #include "GlobalVariables.h"
@@ -22,21 +21,23 @@ uint64_t US_millis;
 #define SCAN_FIELD_DEGREE 90
 #define MILLIS_PER_DEGREE (1.0 + 2.0 / 3.0)
 #define SCAN_MILLIS_MARGIN 10
+#define USONIC_DIV 58.0
 
 float scanPoints[NUM_SCANPOINTS];
 
 class ObstakelDetectie {
 private:
-	Ultrasonic us;
 	uint16_t measurements[NUM_MEASUREMENTS];
 	uint8_t index;
+	uint8_t trig;
+	uint8_t echo;
 
 public:
 	bool servoAttached;
 	Servo servo;
 
 public:
-	ObstakelDetectie() : us(Ultrasonic(0, 0)) {}
+	ObstakelDetectie() {}
 
 	/*
 	Obstakel Detectie constructor
@@ -46,10 +47,12 @@ public:
 	@param timeOut, time out voor ultrasone sensor
 	@param servoPin, servo pin
 	*/
-	ObstakelDetectie(uint8_t trig, uint8_t echo, unsigned long timeOut = 20, uint8_t servoPin = 0)
-		: us(Ultrasonic(trig, echo, timeOut * 1000)) {
+	ObstakelDetectie(uint8_t _trig, uint8_t _echo, uint8_t servoPin = 0) {
+		trig = _trig;
+		echo = _echo;
+
 		index = 0;
-		uint16_t m = us.read();
+		uint16_t m = singleMeasurement_cm();
 		for (uint8_t i = 0; i < NUM_MEASUREMENTS; i++) {
 			measurements[i] = m;
 		}
@@ -60,6 +63,15 @@ public:
 		}
 	}
 
+	long singleMeasurement_cm() {
+		long duration = 0;
+		digitalWrite(trig, HIGH);
+		delayMicroseconds(11);
+		digitalWrite(trig, LOW);
+		duration = pulseIn(echo, HIGH);
+		return (long)((((float)duration / USONIC_DIV) * 10.0) / 10);
+	}
+
 	/*
 	Leest de Ultrasone sensor uit en zet het in een array.
 
@@ -67,7 +79,7 @@ public:
 	*/
 	unsigned int read() {
 		if (index >= NUM_MEASUREMENTS) index = 0;
-		measurements[index] = us.read();
+		measurements[index] = singleMeasurement_cm();
 		return measurements[index++];
 	}
 
@@ -113,13 +125,23 @@ bool scanO(float dist) {
 }
 
 bool scan(float d) {
-	
+
 	return false;
 }*/
 
 void setupObstakelDetectie() {
-	US_front = new ObstakelDetectie(FRONT_TRIGGER, FRONT_ECHO, updateTime_ms, SERVO);
-	US_rear = new ObstakelDetectie(REAR_TRIGGER, REAR_ECHO, updateTime_ms);
+	pinMode(FRONT_TRIGGER, OUTPUT);
+	pinMode(FRONT_ECHO, INPUT);
+	pinMode(REAR_TRIGGER, OUTPUT);
+	pinMode(REAR_ECHO, INPUT);
+
+	digitalWrite(FRONT_TRIGGER, LOW);
+	digitalWrite(REAR_TRIGGER, LOW);
+
+	delay(50);
+
+	US_front = new ObstakelDetectie(FRONT_TRIGGER, FRONT_ECHO, SERVO);
+	US_rear = new ObstakelDetectie(REAR_TRIGGER, REAR_ECHO);
 
 	US_millis = millis();
 	US_front->servo.write(90);
@@ -211,29 +233,29 @@ void loopObstakelDetectie() {
 					obstakelState = Direction::BACKWARDS;
 				}
 				break;
-			/*case State::SCANNING:
-				//TODO 2 soorten bochten (T- bocht van onder en T- bocht van boven)
-				if (millis() >= nextScanMillis) {
-					scanPoints[scanIndex] += distance / NUM_MEASUREMENTS;
-					scanMeasureIndex++;
+				/*case State::SCANNING:
+					//TODO 2 soorten bochten (T- bocht van onder en T- bocht van boven)
+					if (millis() >= nextScanMillis) {
+						scanPoints[scanIndex] += distance / NUM_MEASUREMENTS;
+						scanMeasureIndex++;
 
-					if (scanMeasureIndex >= NUM_MEASUREMENTS) {
-						scanMeasureIndex = 0;
-						scanIndex++;
+						if (scanMeasureIndex >= NUM_MEASUREMENTS) {
+							scanMeasureIndex = 0;
+							scanIndex++;
 
-						if (scanIndex >= NUM_SCANPOINTS) {
-							// DO THE MAGIC
-							obstakelState = Direction::LEFT;
-							US_front->servo.write(90);
-							break;
+							if (scanIndex >= NUM_SCANPOINTS) {
+								// DO THE MAGIC
+								obstakelState = Direction::LEFT;
+								US_front->servo.write(90);
+								break;
+							}
+
+							float targetAngle = scanIndex * SCAN_FIELD_DEGREE / (NUM_SCANPOINTS - 1) - SCAN_FIELD_DEGREE / 2.0 + 90;
+							nextScanMillis = millis() + abs(US_front->servo.read() - targetAngle) * MILLIS_PER_DEGREE + SCAN_MILLIS_MARGIN;
+							US_front->servo.write(targetAngle);
 						}
-						
-						float targetAngle = scanIndex * SCAN_FIELD_DEGREE / (NUM_SCANPOINTS - 1) - SCAN_FIELD_DEGREE / 2.0 + 90;
-						nextScanMillis = millis() + abs(US_front->servo.read() - targetAngle) * MILLIS_PER_DEGREE + SCAN_MILLIS_MARGIN;
-						US_front->servo.write(targetAngle);
 					}
-				}
-				break;*/
+					break;*/
 			}
 		}
 	}
