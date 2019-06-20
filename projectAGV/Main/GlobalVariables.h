@@ -101,6 +101,8 @@ static Vector pos;
 static Vector target;
 static uint8_t pathNumber;
 
+static boolean NoodstopActive;
+
 /*
 Globale sensoren
 */

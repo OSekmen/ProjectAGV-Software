@@ -222,6 +222,7 @@ void loopAandrijving()
 
 			_noodsetCheck = true;
 			_noodresetCheck = false;
+			NoodstopActive = true;
 		}
 		aandrijvingMode = Stop;
 	}
@@ -230,6 +231,7 @@ void loopAandrijving()
 		aandrijvingMode = _safeMode_by_nood;
 		_noodsetCheck = false;
 		_noodresetCheck = true;
+		NoodstopActive = false;
 	}
 	else { }
 	
