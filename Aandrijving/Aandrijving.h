@@ -205,14 +205,30 @@ void setupAandrijving()
 
 void loopAandrijving()
 {
-	// TODO noodstop lezen en stoppen 
-
 	static boolean firstHandel[5];
+	static AandrijfMode _safeMode_by_nood;
+	static boolean _noodsetCheck;
+	static boolean _noodresetCheck;
 	
 	double _bijstuurWaarde;
 	double _distance;
 	StuurRichting _stuurRichting;
 
+	if (digitalRead(NOODSTOP) && !_noodsetCheck)
+	{
+		_safeMode_by_nood = aandrijvingMode;
+
+		aandrijvingMode = Stop;
+		_noodsetCheck = true;
+		_noodresetCheck = false;
+	}
+	else if (!digitalRead(NOODSTOP) && !_noodresetCheck)
+	{
+		aandrijvingMode = _safeMode_by_nood;
+		_noodsetCheck = false;
+		_noodresetCheck = true;
+	}
+	else {	}
 	
 	switch (aandrijvingMode)
 	{
