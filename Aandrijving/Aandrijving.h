@@ -218,7 +218,7 @@ void loopAandrijving()
 
 	boolean NoodstopStatus = digitalRead(NOODSTOP);
 
-	if (!NoodstopStatus)
+	if (NoodstopStatus)
 	{
 		if (!_noodsetCheck)
 		{
@@ -233,7 +233,7 @@ void loopAandrijving()
 
 		NoodstopActive = true;
 	}
-	else if (NoodstopStatus && !_noodresetCheck)
+	else if (!NoodstopStatus && !_noodresetCheck)
 	{
 		aandrijvingMode = _safeMode_by_nood;
 		_noodsetCheck = false;
