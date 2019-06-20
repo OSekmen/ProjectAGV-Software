@@ -197,7 +197,9 @@ void setupAandrijving()
 	Timer1.initialize(ClockSpeedCalculations());
 	Timer1.attachInterrupt(StepperHandler); // attach the service routine here
 
-	MaxBijstuurFRQ = (MaxFRQ / 500) ;
+	MaxBijstuurFRQ = (MaxFRQ / 500);
+
+	
 }
 
 
@@ -223,8 +225,9 @@ void loopAandrijving()
 			_noodsetCheck = true;
 			_noodresetCheck = false;
 			NoodstopActive = true;
+
+			aandrijvingMode = Stop;
 		}
-		aandrijvingMode = Stop;
 	}
 	else if (digitalRead(NOODSTOP) && !_noodresetCheck)
 	{
