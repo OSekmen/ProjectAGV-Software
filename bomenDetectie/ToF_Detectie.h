@@ -164,20 +164,24 @@ void TreeProssing(uint8_t mode) {
 
 	case 1:	//links van AGV
 		if (ScanTree(Boom_L)) {
-			// doe iets!
-			//*command = true;
-			Serial.println("boom links");
+			//Serial.println("boom links");
+			Serial1.print("page 3");
+			Serial1.write(0xFF);
+			Serial1.write(0xFF);
+			Serial1.write(0xFF);
 			boomGedetecteerd = true;
 		}
 		else
-			//*command = false;
 			boomGedetecteerd = false;
 		break;
 
 	case 2:	//rechts van AGV
 		if (ScanTree(Boom_R)) {
-			// doe iets!
-			//*command = true;
+			//Serial.println("boom rechts");
+			Serial1.print("page 4");
+			Serial1.write(0xFF);
+			Serial1.write(0xFF);
+			Serial1.write(0xFF);
 			boomGedetecteerd = true;
 		}
 		else

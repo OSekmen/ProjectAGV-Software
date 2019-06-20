@@ -224,7 +224,7 @@ void loopNavigatie() {
 
 			// scannen voor bomen
 			if (boomGedetecteerd) {
-				signalEndMillis = millis() + 1000;
+				signalEndMillis = millis() + 2500;
 				navState = SIGNALEREN;
 				am = Stop;
 			}

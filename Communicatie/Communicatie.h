@@ -48,6 +48,12 @@ void inputCode() {
 			case 'M':
 				schermMode = Scherm::MANUAL;
 				break;
+			case 'V':
+				mode = Mode::FOLLOW;
+				break;
+			case 'A':
+				mode == Mode::NORMAL;
+				break;
 
 			/*case 'M':
 				magnet = !magnet;

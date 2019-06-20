@@ -3,7 +3,6 @@
 #include "GlobalVariables.h"
 #include "ToF_Detectie.h"
 
-
 #define StepperLinks  0
 #define StepperRechts 1
 

@@ -4,11 +4,9 @@
 
 /*
 	TODO-list
-	- knop om te volgen
-	- boom detectie op scherm
 	- bocht maken
 	- positie bepaling maar 1 coordinaat punt
-	- alle pins invullen
+	- Noodstop
 */
 
 
