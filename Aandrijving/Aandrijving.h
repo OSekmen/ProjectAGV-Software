@@ -234,9 +234,10 @@ void loopAandrijving()
 		aandrijvingMode = _safeMode_by_nood;
 		_noodsetCheck = false;
 		_noodresetCheck = true;
+	}
+	else {
 		NoodstopActive = false;
 	}
-	else { }
 	
 	switch (aandrijvingMode)
 	{
