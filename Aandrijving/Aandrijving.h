@@ -228,6 +228,8 @@ void loopAandrijving()
 
 			aandrijvingMode = Stop;
 		}
+
+		NoodstopActive = true;
 	}
 	else if (digitalRead(NOODSTOP) && !_noodresetCheck)
 	{
