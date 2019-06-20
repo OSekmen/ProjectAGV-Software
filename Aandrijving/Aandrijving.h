@@ -216,7 +216,9 @@ void loopAandrijving()
 	double _distance;
 	StuurRichting _stuurRichting;
 
-	if (!digitalRead(NOODSTOP))
+	boolean NoodstopStatus = digitalRead(NOODSTOP);
+
+	if (!NoodstopStatus)
 	{
 		if (!_noodsetCheck)
 		{
@@ -231,7 +233,7 @@ void loopAandrijving()
 
 		NoodstopActive = true;
 	}
-	else if (digitalRead(NOODSTOP) && !_noodresetCheck)
+	else if (NoodstopStatus && !_noodresetCheck)
 	{
 		aandrijvingMode = _safeMode_by_nood;
 		_noodsetCheck = false;
@@ -241,6 +243,8 @@ void loopAandrijving()
 		NoodstopActive = false;
 	}
 	
+	Serial.print("Noodstop: ");
+	Serial.println(NoodstopStatus);
 	switch (aandrijvingMode)
 	{
 	case Stop:
