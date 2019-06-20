@@ -214,13 +214,16 @@ void loopAandrijving()
 	double _distance;
 	StuurRichting _stuurRichting;
 
-	if (digitalRead(NOODSTOP) && !_noodsetCheck)
+	if (digitalRead(NOODSTOP))
 	{
-		_safeMode_by_nood = aandrijvingMode;
+		if (!_noodsetCheck)
+		{
+			_safeMode_by_nood = aandrijvingMode;
 
+			_noodsetCheck = true;
+			_noodresetCheck = false;
+		}
 		aandrijvingMode = Stop;
-		_noodsetCheck = true;
-		_noodresetCheck = false;
 	}
 	else if (!digitalRead(NOODSTOP) && !_noodresetCheck)
 	{
@@ -228,7 +231,6 @@ void loopAandrijving()
 		_noodsetCheck = false;
 		_noodresetCheck = true;
 	}
-	else {	}
 	
 	switch (aandrijvingMode)
 	{
