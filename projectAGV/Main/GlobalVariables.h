@@ -6,7 +6,6 @@
 	TODO-list
 	- bocht maken
 	- positie bepaling maar 1 coordinaat punt
-	- Noodstop
 */
 
 
@@ -14,7 +13,7 @@
 LOGLEVEL 0: Geen logs
 LOGLEVEL 1: Wel logs
 */
-#define LOGLEVEL 1
+#define LOGLEVEL 0
 #define PI 3.1415926535897932384626433832795
 
 /*
@@ -101,7 +100,7 @@ static Vector pos;
 static Vector target;
 static uint8_t pathNumber;
 
-static boolean NoodstopActive;
+volatile boolean NoodstopActive;
 
 /*
 Globale sensoren

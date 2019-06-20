@@ -145,6 +145,9 @@ void setupNavigatie() {
 	pathNumber = 4;
 #endif
 
+
+	direction = Direction::STOP;
+	aandrijvingMode = Stop;
 	createPath(info);
 
 	for (uint8_t p = 0; p < queueSize; p++) {
@@ -243,6 +246,10 @@ void loopNavigatie() {
 				}
 			}
 
+			if (NoodstopActive) {
+				am = Stop;
+			}
+
 			aandrijvingMode = am;
 
 
@@ -312,6 +319,10 @@ void loopNavigatie() {
 				if (US_rear->distance() <= stopDistance) {
 					am = Stop;
 				}
+			}
+
+			if (NoodstopActive) {
+				am = Stop;
 			}
 
 			aandrijvingMode = am;
@@ -410,13 +421,19 @@ void loopNavigatie() {
 		// Vooruit
 		if (distanceFront > stopDistance + followMarge) {
 			aandrijvingMode = Vooruit;
+			direction = Direction::FORWARDS;
 		}
 		// Achteruit zolang dat kan
-		else if (distanceFront < stopDistance - followMarge &&
-			distanceRear > stopDistance + followMarge) {
+		else if (distanceFront < stopDistance - followMarge) {
 			aandrijvingMode = Achteruit;
+			direction = Direction::BACKWARDS;
 		}
 		else {
+			aandrijvingMode = Stop;
+			direction = Direction::STOP;
+		}
+
+		if (NoodstopActive) {
 			aandrijvingMode = Stop;
 		}
 

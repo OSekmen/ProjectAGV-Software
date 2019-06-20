@@ -57,8 +57,10 @@ void loop() {
 		printAandrijving(aandrijvingMode);
 		Serial.print(", US_front: ");
 		Serial.print(US_front->distance());
+		Serial.print(", US_rear: ");
+		Serial.print(US_rear->distance());
 		Serial.println();
-		nextMillis = millis() + 500;
+		nextMillis = millis() + 50;
 	}
 #endif
 }

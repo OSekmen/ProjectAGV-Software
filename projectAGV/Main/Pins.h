@@ -5,9 +5,9 @@ In dit bestand staan welke pins gebruikt moeten worden
 
 #pragma region Obstakel Detectie
 #define FRONT_TRIGGER 4
-#define REAR_TRIGGER 7
+#define REAR_TRIGGER 6
 #define FRONT_ECHO 5
-#define REAR_ECHO 6
+#define REAR_ECHO 8
 #define SERVO 0
 #pragma endregion
 
@@ -33,5 +33,5 @@ static uint8_t IC_REG = 0;
 #pragma endregion
 
 #pragma region xD
-#define NOODSTOP 8
+#define NOODSTOP 7
 #pragma endregion

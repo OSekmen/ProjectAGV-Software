@@ -5,11 +5,11 @@
 #include "GlobalVariables.h"
 
 const float stopDistance = 10;
-const float followMarge = 2;
-const uint32_t updateTime_ms = 10;
+const float followMarge = 5;
+const uint32_t updateTime_ms = 50;
 uint64_t US_millis;
 
-#define NUM_MEASUREMENTS 10
+#define NUM_MEASUREMENTS 5
 #define NUM_SCANPOINTS 4
 #define SCAN_FIELD_DEGREE 90
 #define MILLIS_PER_DEGREE (1.0 + 2.0 / 3.0)

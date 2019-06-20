@@ -181,40 +181,17 @@ uint32_t ClockSpeedCalculations()
 	double _travelSteps = _stepResolution / _distanceTravel;
 	double _stepsPer2000 = _travelSteps * 2000;
 
-	MaxFRQ = (_stepsPer2000 * 2.0) / 15.0; // keer 2, omdat 50% aan & 50% uit
+	MaxFRQ = (_stepsPer2000 * 2.0) / 25.0; // keer 2, omdat 50% aan & 50% uit
 
 	return ((1.0 / (double)MaxFRQ) * 1000000); // zet het om tot microseconden
 }
 #pragma endregion
 
-
-void setupAandrijving()
+void ISR_Noodstop()
 {
-	pinMode(DIRECTION_L, OUTPUT);
-	pinMode(PULSE_L, OUTPUT);
-	pinMode(DIRECTION_R, OUTPUT);
-	pinMode(PULSE_R, OUTPUT);
-	Timer1.initialize(ClockSpeedCalculations());
-	Timer1.attachInterrupt(StepperHandler); // attach the service routine here
-
-	MaxBijstuurFRQ = (MaxFRQ / 500);
-
-	
-}
-
-
-#pragma region Loop Aandrijving
-
-void loopAandrijving()
-{
-	static boolean firstHandel[5];
 	static AandrijfMode _safeMode_by_nood;
 	static boolean _noodsetCheck;
 	static boolean _noodresetCheck;
-	
-	double _bijstuurWaarde;
-	double _distance;
-	StuurRichting _stuurRichting;
 
 	boolean NoodstopStatus = digitalRead(NOODSTOP);
 
@@ -243,9 +220,38 @@ void loopAandrijving()
 		}
 		NoodstopActive = false;
 	}
+}
+
+void setupAandrijving()
+{
+	pinMode(DIRECTION_L, OUTPUT);
+	pinMode(PULSE_L, OUTPUT);
+	pinMode(DIRECTION_R, OUTPUT);
+	pinMode(PULSE_R, OUTPUT);
+	Timer1.initialize(ClockSpeedCalculations());
+	Timer1.attachInterrupt(StepperHandler); // attach the service routine here
+
+	MaxBijstuurFRQ = (MaxFRQ / 500);
+
+	attachInterrupt(digitalPinToInterrupt(NOODSTOP), ISR_Noodstop, CHANGE);
+}
+
+
+#pragma region Loop Aandrijving
+
+void loopAandrijving()
+{
+	static boolean firstHandel[5];
 	
-	Serial.print("Noodstop: ");
-	Serial.println(NoodstopStatus);
+	
+	double _bijstuurWaarde;
+	double _distance;
+	StuurRichting _stuurRichting;
+
+	
+	
+	//Serial.print("Noodstop: ");
+	//Serial.println(NoodstopStatus);
 	switch (aandrijvingMode)
 	{
 	case Stop:

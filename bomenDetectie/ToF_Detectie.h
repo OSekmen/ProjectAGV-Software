@@ -31,6 +31,7 @@ float readToF_cm(VL53L0X* sensor) {
 	return (float)sensor->readRangeSingleMillimeters() / 10.0;
 }
 
+/*
 class ToF {
 private:
 	float measurements[NUM_TOF_MEASUREMENTS];
@@ -66,7 +67,7 @@ public:
 };
 
 ToF randR;
-ToF randL;
+ToF randL;*/
 
 
 void resetToFsensor(uint8_t sensorNumber) {
@@ -143,7 +144,7 @@ bool ScanTree(uint8_t sensorNumber) {
 
 	long distance = readToF_mm(ToFSensors[sensorNumber]);
 
-	if (distance >= 80 && distance <= 125) {	//200/2 + 60/2 - (170/2 + 20) = afstand van sensor tot boom 
+	if (distance >= 80 && distance <= 225) {	//200/2 + 60/2 - (170/2 + 20) = afstand van sensor tot boom 
 		if (!reset[sensorNumber]) {
 			reset[sensorNumber] = true;
 			return true;
@@ -165,7 +166,7 @@ void TreeProssing(uint8_t mode) {
 	case 1:	//links van AGV
 		if (ScanTree(Boom_L)) {
 			//Serial.println("boom links");
-			Serial1.print("page 3");
+			Serial1.print("page 4");
 			Serial1.write(0xFF);
 			Serial1.write(0xFF);
 			Serial1.write(0xFF);
@@ -178,7 +179,7 @@ void TreeProssing(uint8_t mode) {
 	case 2:	//rechts van AGV
 		if (ScanTree(Boom_R)) {
 			//Serial.println("boom rechts");
-			Serial1.print("page 4");
+			Serial1.print("page 3");
 			Serial1.write(0xFF);
 			Serial1.write(0xFF);
 			Serial1.write(0xFF);
@@ -198,15 +199,15 @@ void scanOneSide(double& bijstuurWaarde, double& distance, StuurRichting& turnSi
 	if (!side) // links scannen
 	{
 		//distanceScan = (cos(AGV_Angle_RAD) * readToF_mm(ToFSensors[Rand_L])) - 40;
-		//distanceScan = readToF_mm(ToFSensors[Rand_L]) - 40;
-		distanceScan = randL.distance() - 40;
+		distanceScan = readToF_mm(ToFSensors[Rand_L]) - 40;
+		//distanceScan = randL.distance() - 40;
 	}
 
 	else if (side) // rechts scannen
 	{
 		//distanceScan = (cos(AGV_Angle_RAD) * readToF_mm(ToFSensors[Rand_R])) - 40;
-		//distanceScan = readToF_mm(ToFSensors[Rand_R]) - 40;
-		distanceScan = randR.distance() - 40;
+		distanceScan = readToF_mm(ToFSensors[Rand_R]) - 40;
+		//distanceScan = randR.distance() - 40;
 	}
 
 
@@ -253,11 +254,11 @@ void scanTwoSides(double& bijstuurWaarde, double& distance, StuurRichting& turnS
 	//int16_t distanceL = (cos(AGV_Angle_RAD) * readToF_mm(ToFSensors[Rand_L])) - 40;
 	//int16_t distanceR = (cos(AGV_Angle_RAD) * readToF_mm(ToFSensors[Rand_R])) - 40;
 
-	//int16_t distanceL = (readToF_mm(ToFSensors[Rand_L])) - 40;
-	//int16_t distanceR = (readToF_mm(ToFSensors[Rand_R])) - 40;
+	int16_t distanceL = (readToF_mm(ToFSensors[Rand_L])) - 40;
+	int16_t distanceR = (readToF_mm(ToFSensors[Rand_R])) - 40;
 
-	float distanceL = randL.distance() - 40;
-	float distanceR = randR.distance() - 40;
+	//float distanceL = randL.distance() - 40;
+	//float distanceR = randR.distance() - 40;
 
 	distance = (distanceL + distanceR) / 2 ;
 
@@ -374,15 +375,17 @@ void setup_ToF_Detectie() {
 	for (int i = 0; i <= 3; i++) { setupResetToFsensor(i); }
 
 	delay(10);
-	randR = ToF(Rand_R);
-	randL = ToF(Rand_L);
+	//randR = ToF(Rand_R);
+	//randL = ToF(Rand_L);
 }
 
 void loop_ToF_Detectie() {
 	//TreeScanMode = 1;
-	TreeProssing(TreeScanMode);
-	randR.read();
-	randL.read();
+	if (mode == Mode::NORMAL) {
+		TreeProssing(TreeScanMode);
+	}
+	//randR.read();
+	//randL.read();
 
 	/*Serial.print(randR.distance());
 	Serial.print("  ");
